@@ -16,6 +16,45 @@ export const FREQUENCY_LABEL: Record<BillingFrequency, string> = {
   [BillingFrequency.YEARLY]:      "Yearly",
 };
 
+/** Short suffix shown inline with an amount: "/wk", "/mo", "/6mo", "/yr" */
+export const FREQUENCY_SHORT: Record<BillingFrequency, string> = {
+  [BillingFrequency.WEEKLY]:      "/wk",
+  [BillingFrequency.MONTHLY]:     "/mo",
+  [BillingFrequency.BI_ANNUALLY]: "/6mo",
+  [BillingFrequency.YEARLY]:      "/yr",
+};
+
+export type NormalizeView = "original" | "weekly" | "monthly" | "yearly";
+
+/** Normalize a cost to a chosen view period */
+export function calculateNormalizedCost(
+  cost: number,
+  frequency: BillingFrequency,
+  view: NormalizeView
+): number {
+  const annualCost = cost * FREQUENCY_MULTIPLIER[frequency];
+  switch (view) {
+    case "weekly":   return annualCost / 52;
+    case "monthly":  return annualCost / 12;
+    case "yearly":   return annualCost;
+    default:         return cost;          // "original" — raw billing amount
+  }
+}
+
+export const NORMALIZE_VIEW_LABEL: Record<NormalizeView, string> = {
+  original: "Original",
+  weekly:   "Weekly",
+  monthly:  "Monthly",
+  yearly:   "Yearly",
+};
+
+export const NORMALIZE_VIEW_SUFFIX: Record<NormalizeView, string> = {
+  original: "",
+  weekly:   "/wk",
+  monthly:  "/mo",
+  yearly:   "/yr",
+};
+
 /** True prorated monthly cost for any frequency */
 export function calculateTrueMonthlyCost(cost: number, frequency: BillingFrequency): number {
   return (cost * FREQUENCY_MULTIPLIER[frequency]) / 12;
@@ -99,3 +138,67 @@ export function buildMonthlyProjection(
 export function daysUntil(date: Date, from: Date = new Date()): number {
   return differenceInDays(date, from);
 }
+
+export interface CalendarPayment {
+  name:     string;
+  date:     Date;
+  amount:   number;
+  category: string | null;
+}
+
+export interface CalendarMonth {
+  label:    string;   // "Aug 2026"
+  total:    number;
+  payments: CalendarPayment[];
+}
+
+/**
+ * Build a 12-month calendar of actual payments for each subscription.
+ * Each month contains the individual payments that physically land in it.
+ */
+export function buildYearlyCalendar(
+  subscriptions: Array<{
+    name:             string;
+    startDate:        Date;
+    billingFrequency: BillingFrequency;
+    cost:             number;
+    category:         string | null;
+  }>,
+  currentDate: Date = new Date()
+): CalendarMonth[] {
+  const months: CalendarMonth[] = [];
+
+  for (let i = 0; i < 12; i++) {
+    const d     = addMonths(currentDate, i);
+    const label = d.toLocaleDateString("en-MY", { month: "short", year: "numeric" });
+    months.push({ label, total: 0, payments: [] });
+  }
+
+  const endDate = addMonths(currentDate, 12);
+
+  for (const sub of subscriptions) {
+    let next = calculateNextPaymentDate(sub.startDate, sub.billingFrequency, currentDate);
+    while (next <= endDate) {
+      const label = next.toLocaleDateString("en-MY", { month: "short", year: "numeric" });
+      const month = months.find((m) => m.label === label);
+      if (month) {
+        month.total += sub.cost;
+        month.payments.push({
+          name:     sub.name,
+          date:     new Date(next),
+          amount:   sub.cost,
+          category: sub.category,
+        });
+      }
+      next = advanceByFrequency(next, sub.billingFrequency);
+    }
+  }
+
+  // Sort payments within each month by date
+  for (const month of months) {
+    month.payments.sort((a, b) => a.date.getTime() - b.date.getTime());
+  }
+
+  return months;
+}
+

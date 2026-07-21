@@ -1,49 +1,78 @@
 import { auth, signIn } from "@/auth";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { LockKeyhole, Mail } from "lucide-react";
+import { LockKeyhole, Mail, TrendingUp, ShieldCheck, BarChart3 } from "lucide-react";
+
+const perks = [
+  { icon: TrendingUp, text: "Rolling due-date forecasting" },
+  { icon: ShieldCheck, text: "True monthly cost calculation" },
+  { icon: BarChart3, text: "6-month projection chart" },
+];
 
 export default async function SignInPage() {
   const session = await auth();
   if (session?.user) redirect("/dashboard");
 
   return (
-    <div className="min-h-screen flex mesh-bg">
-      {/* Left Brand Panel */}
-      <div className="hidden lg:flex lg:w-1/2 brand-gradient flex-col justify-between p-12 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10"
+    <div className="min-h-screen grid lg:grid-cols-2 bg-background">
+      {/* ── Left brand panel ── */}
+      <div className="relative hidden lg:flex flex-col justify-between p-12 brand-gradient overflow-hidden">
+        {/* Dot grid overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.07]"
           style={{
-            backgroundImage: "radial-gradient(circle at 20% 80%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)",
-            backgroundSize: "60px 60px"
+            backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
           }}
         />
-        <Link href="/" className="relative text-white font-extrabold text-2xl tracking-tight">Ledger</Link>
-        <div className="relative">
-          <blockquote className="text-white/90 text-2xl font-light leading-relaxed italic">
-            "The first step to financial clarity is knowing exactly what you owe — and when."
-          </blockquote>
-          <div className="mt-6 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full brand-gradient border-2 border-white/30 flex items-center justify-center text-white font-bold text-sm">
-              L
-            </div>
-            <div>
-              <p className="text-white font-semibold text-sm">Ledger</p>
-              <p className="text-white/60 text-xs">Personal Finance Engine</p>
-            </div>
+        {/* Glow orbs */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-white/8 rounded-full blur-3xl" />
+
+        <Link href="/" className="relative font-extrabold text-2xl tracking-tight text-white">
+          Ledger
+        </Link>
+
+        <div className="relative space-y-8">
+          <div>
+            <h2 className="text-3xl font-extrabold text-white leading-snug">
+              Your subscriptions,<br />completely under control.
+            </h2>
+            <p className="mt-3 text-white/65 text-sm leading-relaxed max-w-sm">
+              Ledger gives you accurate rolling due dates, prorated monthly costs,
+              and a 6-month cash-flow forecast — all in one place.
+            </p>
           </div>
+
+          <ul className="space-y-3">
+            {perks.map((p) => (
+              <li key={p.text} className="flex items-center gap-3">
+                <div className="p-1.5 rounded-lg bg-white/15">
+                  <p.icon className="h-4 w-4 text-white" />
+                </div>
+                <span className="text-white/85 text-sm font-medium">{p.text}</span>
+              </li>
+            ))}
+          </ul>
         </div>
+
+        <p className="relative text-white/40 text-xs">© {new Date().getFullYear()} Ledger</p>
       </div>
 
-      {/* Right Form Panel */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
-        <div className="w-full max-w-md">
-          <div className="mb-8">
-            <Link href="/" className="lg:hidden font-extrabold text-2xl tracking-tight brand-text block mb-8">Ledger</Link>
-            <h1 className="text-3xl font-extrabold tracking-tight">Welcome back</h1>
-            <p className="mt-2 text-muted-foreground">Sign in to your dashboard</p>
+      {/* ── Right form panel ── */}
+      <div className="flex items-center justify-center p-6 sm:p-10 lg:p-16">
+        <div className="w-full max-w-sm space-y-8">
+          {/* Mobile logo */}
+          <Link href="/" className="lg:hidden block font-extrabold text-2xl tracking-tight brand-text">
+            Ledger
+          </Link>
+
+          <div>
+            <h1 className="text-2xl font-extrabold tracking-tight">Welcome back</h1>
+            <p className="mt-1.5 text-sm text-muted-foreground">Sign in to your account to continue</p>
           </div>
 
           <form
@@ -55,49 +84,55 @@ export default async function SignInPage() {
                 redirectTo: "/dashboard",
               });
             }}
-            className="space-y-5"
+            className="space-y-4"
           >
-            <div className="space-y-2">
-              <Label htmlFor="email" className="font-medium">Email</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-sm font-medium">Email address</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
                   id="email"
                   name="email"
                   type="email"
+                  autoComplete="email"
                   required
                   placeholder="demo@example.com"
-                  className="pl-9 bg-muted/40 border-border/60 focus:bg-background transition-colors"
+                  className="pl-9 h-10 bg-muted/40 border-border/60 focus-visible:bg-background transition-colors"
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="font-medium">Password</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-sm font-medium">Password</Label>
               <div className="relative">
-                <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
                   id="password"
                   name="password"
                   type="password"
+                  autoComplete="current-password"
                   required
                   placeholder="••••••••"
-                  className="pl-9 bg-muted/40 border-border/60 focus:bg-background transition-colors"
+                  className="pl-9 h-10 bg-muted/40 border-border/60 focus-visible:bg-background transition-colors"
                 />
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="w-full mt-2 shadow-lg shadow-primary/20 font-semibold">
+            <Button type="submit" size="lg" className="w-full font-semibold shadow-md shadow-primary/15 mt-2">
               Sign In
             </Button>
           </form>
 
-          <div className="mt-8 p-4 rounded-xl border border-dashed border-border/60 bg-muted/30">
-            <p className="text-xs text-muted-foreground font-medium mb-1">Demo credentials</p>
-            <p className="text-sm font-mono">demo@example.com / password123</p>
+          {/* Demo hint */}
+          <div className="rounded-xl border border-dashed border-border bg-muted/30 p-4">
+            <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Demo credentials</p>
+            <div className="space-y-1">
+              <p className="text-sm font-mono text-foreground">demo@example.com</p>
+              <p className="text-sm font-mono text-foreground">password123</p>
+            </div>
           </div>
 
-          <p className="mt-6 text-center text-sm text-muted-foreground">
+          <p className="text-center text-xs text-muted-foreground">
             <Link href="/" className="hover:text-foreground transition-colors underline underline-offset-4">
               ← Back to home
             </Link>

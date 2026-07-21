@@ -53,7 +53,7 @@ export function DashboardFilters() {
 
       <div className="space-y-1.5">
         <Label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Category</Label>
-        <Select value={category} onValueChange={(v) => update("category", v)}>
+        <Select value={category} onValueChange={(v) => update("category", v ?? "all")}>
           <SelectTrigger className="w-full h-9 text-sm">
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
@@ -68,7 +68,7 @@ export function DashboardFilters() {
 
       <div className="space-y-1.5">
         <Label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Sort By</Label>
-        <Select value={sort} onValueChange={(v) => update("sort", v)}>
+        <Select value={sort} onValueChange={(v) => update("sort", v ?? "date")}>
           <SelectTrigger className="w-full h-9 text-sm">
             <SelectValue />
           </SelectTrigger>
