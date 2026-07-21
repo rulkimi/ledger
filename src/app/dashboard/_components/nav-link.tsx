@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, List, CalendarDays } from "lucide-react";
+import { LayoutDashboard, List, CalendarDays, Sparkles } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/dashboard",          label: "Overview",  Icon: LayoutDashboard },
   { href: "/dashboard/bills",    label: "Bills",     Icon: List            },
   { href: "/dashboard/calendar", label: "Calendar",  Icon: CalendarDays    },
+  { href: "/dashboard/advisor",  label: "Advisor",   Icon: Sparkles        },
 ];
 
 export function DashboardNav() {
