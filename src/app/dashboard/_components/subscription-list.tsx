@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { DeleteSubscriptionButton } from "./delete-subscription-button";
 import { FilterBar } from "./filter-bar";
 import { EditSubscriptionDialog } from "./edit-subscription-dialog";
+import type { BillingFrequency as ServerBillingFrequency } from "@/generated/prisma/client";
 
 export default async function SubscriptionList({
   category,
@@ -27,8 +28,7 @@ export default async function SubscriptionList({
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const currency = (session.user as any).currency ?? "MYR";
+  const currency = session.user.currency ?? "MYR";
   const now = new Date();
 
   const subs = await prisma.subscription.findMany({
@@ -162,8 +162,7 @@ export default async function SubscriptionList({
                     defaultValues={{
                       name:             sub.name,
                       cost:             sub.rawCost,
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      billingFrequency: sub.billingFrequency as any,
+                      billingFrequency: sub.billingFrequency as ServerBillingFrequency,
                       startDate:        sub.startDate,
                       category:         sub.category,
                       notes:            sub.notes,

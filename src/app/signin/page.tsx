@@ -12,9 +12,12 @@ const perks = [
   { icon: BarChart3, text: "6-month projection chart" },
 ];
 
-export default async function SignInPage() {
+export default async function SignInPage(props: { searchParams: Promise<{ registered?: string }> }) {
   const session = await auth();
   if (session?.user) redirect("/dashboard");
+  
+  const searchParams = await props.searchParams;
+  const isRegistered = searchParams?.registered === "true";
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-background">
@@ -75,6 +78,12 @@ export default async function SignInPage() {
             <p className="mt-1.5 text-sm text-muted-foreground">Sign in to your account to continue</p>
           </div>
 
+          {isRegistered && (
+            <div className="rounded-lg bg-primary/10 border border-primary/20 text-primary text-sm px-3 py-2 font-medium">
+              Account created successfully. Please sign in.
+            </div>
+          )}
+
           <form
             action={async (formData) => {
               "use server";
@@ -96,7 +105,7 @@ export default async function SignInPage() {
                   type="email"
                   autoComplete="email"
                   required
-                  placeholder="demo@example.com"
+                  placeholder="you@example.com"
                   className="pl-9 h-10 bg-muted/40 border-border/60 focus-visible:bg-background transition-colors"
                 />
               </div>
@@ -123,16 +132,15 @@ export default async function SignInPage() {
             </Button>
           </form>
 
-          {/* Demo hint */}
-          <div className="rounded-xl border border-dashed border-border bg-muted/30 p-4">
-            <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Demo credentials</p>
-            <div className="space-y-1">
-              <p className="text-sm font-mono text-foreground">demo@example.com</p>
-              <p className="text-sm font-mono text-foreground">password123</p>
-            </div>
-          </div>
+          {/* Sign up link */}
+          <p className="text-center text-sm text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="text-primary font-medium hover:underline underline-offset-4">
+              Sign up
+            </Link>
+          </p>
 
-          <p className="text-center text-xs text-muted-foreground">
+          <p className="text-center text-xs text-muted-foreground pt-4">
             <Link href="/" className="hover:text-foreground transition-colors underline underline-offset-4">
               ← Back to home
             </Link>

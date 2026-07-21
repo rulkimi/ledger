@@ -7,8 +7,7 @@ export default async function CalendarPage() {
   const session = await auth();
   if (!session?.user?.id) return null;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const currency = (session.user as any).currency ?? "MYR";
+  const currency = session.user.currency ?? "MYR";
   const now      = new Date();
 
   const subs = await prisma.subscription.findMany({

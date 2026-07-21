@@ -30,16 +30,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        token.currency = (user as any).currency ?? "MYR";
+        token.currency = user.currency ?? "MYR";
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (session.user as any).currency = token.currency ?? "MYR";
+        session.user.currency = (token.currency as string) ?? "MYR";
       }
       return session;
     },

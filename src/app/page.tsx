@@ -72,7 +72,7 @@ export default async function HomePage() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary" />
           </span>
-          Smart subscription tracking for Malaysians
+          Smart subscription tracking
         </div>
 
         {/* Headline */}
@@ -85,8 +85,7 @@ export default async function HomePage() {
 
         <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-lg leading-relaxed">
           Ledger calculates your true monthly burn across every billing cycle and
-          forecasts your cash flow 6 months out. All in{" "}
-          <span className="font-semibold text-foreground">Ringgit Malaysia (RM)</span>.
+          forecasts your cash flow 12 months out. Stay in complete control.
         </p>
 
         {/* CTA buttons */}
@@ -120,20 +119,6 @@ export default async function HomePage() {
             </li>
           ))}
         </ul>
-
-        {/* Stats strip */}
-        <div className="mt-16 flex flex-wrap justify-center gap-4 w-full max-w-xl">
-          {[
-            { label: "Billing Frequencies", value: "4" },
-            { label: "Default Currency", value: "RM" },
-            { label: "Projection Window", value: "6 mo" },
-          ].map((s) => (
-            <div key={s.label} className="flex-1 min-w-[100px] rounded-2xl border border-border/60 bg-card/80 glass px-5 py-4 flex flex-col items-center gap-1 shadow-sm">
-              <span className="text-2xl font-extrabold brand-text">{s.value}</span>
-              <span className="text-[11px] text-muted-foreground font-medium text-center">{s.label}</span>
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* Features */}
@@ -165,11 +150,11 @@ export default async function HomePage() {
           <div className="brand-gradient rounded-3xl p-10 text-center text-white shadow-xl shadow-primary/20">
             <h2 className="text-2xl sm:text-3xl font-extrabold mb-3">Ready to get clarity?</h2>
             <p className="text-white/75 text-sm sm:text-base mb-7 max-w-md mx-auto">
-              Sign in with the demo account and see your subscriptions tracked in seconds.
+              Create an account and start tracking your subscriptions in seconds.
             </p>
             <Link href="/signin">
               <Button size="lg" variant="secondary" className="font-semibold shadow-lg gap-2">
-                Try the Demo <ArrowRight className="h-4 w-4" />
+                Get Started <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createSubscription } from "@/actions/subscription";
 import { Plus, Loader2 } from "lucide-react";
+import type { BillingFrequency as ServerBillingFrequency } from "@/generated/prisma/client";
 
 const BILLING_FREQUENCIES = {
   WEEKLY:      "WEEKLY",
@@ -44,7 +45,7 @@ export function AddSubscriptionDialog() {
       await createSubscription({
         name:             formData.get("name") as string,
         cost:             Number(formData.get("cost")),
-        billingFrequency: frequency as any,
+        billingFrequency: frequency as ServerBillingFrequency,
         startDate:        new Date(formData.get("startDate") as string),
         category:         category || undefined,
         notes:            (formData.get("notes") as string) || undefined,
@@ -88,7 +89,7 @@ export function AddSubscriptionDialog() {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="add-cost" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Amount (RM)</Label>
+              <Label htmlFor="add-cost" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Amount</Label>
               <Input id="add-cost" name="cost" type="number" step="0.01" min="0.01" required placeholder="0.00" className="bg-muted/30 font-mono" />
             </div>
             <div className="space-y-1.5">
@@ -134,7 +135,7 @@ export function AddSubscriptionDialog() {
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit" size="sm" disabled={loading} className="min-w-[110px]">
+            <Button type="submit" size="sm" disabled={loading} className="min-w-[130px]">
               {loading
                 ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Saving…</>
                 : "Save & View Bills"}

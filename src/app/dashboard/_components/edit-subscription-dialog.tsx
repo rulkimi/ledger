@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { updateSubscription } from "@/actions/subscription";
 import { Pencil, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import type { BillingFrequency as ServerBillingFrequency } from "@/generated/prisma/client";
 
 const CATEGORIES = [
   "Entertainment", "Health", "Technology", "Auto", "Shopping",
@@ -49,7 +50,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
       await updateSubscription(id, {
         name:             formData.get("name") as string,
         cost:             Number(formData.get("cost")),
-        billingFrequency: frequency as any,
+        billingFrequency: frequency as ServerBillingFrequency,
         startDate:        new Date(formData.get("startDate") as string),
         category:         category || undefined,
         notes:            (formData.get("notes") as string) || undefined,
@@ -99,7 +100,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="edit-cost" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount (RM)</Label>
+              <Label htmlFor="edit-cost" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</Label>
               <Input
                 id="edit-cost"
                 name="cost"

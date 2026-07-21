@@ -22,8 +22,7 @@ export default async function SummaryCards({ category }: { category?: string }) 
     },
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const currency = (session.user as any).currency ?? "MYR";
+  const currency = session.user.currency ?? "MYR";
   const now = new Date();
 
   const trueMonthlyCost = subs.reduce(

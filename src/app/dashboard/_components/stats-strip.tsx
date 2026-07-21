@@ -17,8 +17,7 @@ export default async function StatsStrip({ category }: { category?: string }) {
     where: { userId: session.user.id, isActive: true, ...(category ? { category } : {}) },
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const currency = (session.user as any).currency ?? "MYR";
+  const currency = session.user.currency ?? "MYR";
   const now = new Date();
 
   const monthly = subs.reduce(
