@@ -2,15 +2,19 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import StatsStrip from "./_components/stats-strip";
 import NextMonthPreview from "./_components/next-month-preview";
+import { AddSubscriptionDialog } from "./_components/add-subscription-dialog";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 export default async function DashboardPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight">Overview</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">Your financial snapshot at a glance.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">Overview</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Your financial snapshot at a glance.</p>
+        </div>
+        <AddSubscriptionDialog />
       </div>
 
       {/* Stats */}
