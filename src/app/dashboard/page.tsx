@@ -8,7 +8,7 @@ import { ArrowRight } from "lucide-react";
 
 export default async function DashboardPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 flex-1 flex flex-col pb-6 min-h-0">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold tracking-tight">Overview</h1>
@@ -23,9 +23,11 @@ export default async function DashboardPage() {
       </Suspense>
 
       {/* Next month preview */}
-      <Suspense fallback={<Skeleton className="h-28 w-full rounded-xl" />}>
-        <NextMonthPreview />
-      </Suspense>
+      <div className="flex-1 flex flex-col min-h-0">
+        <Suspense fallback={<Skeleton className="flex-1 w-full rounded-xl" />}>
+          <NextMonthPreview />
+        </Suspense>
+      </div>
 
       {/* Quick links */}
       <div className="grid grid-cols-2 gap-3">

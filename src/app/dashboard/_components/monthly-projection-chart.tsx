@@ -60,7 +60,7 @@ export default async function MonthlyProjectionChart({ category }: { category?: 
               return (
                 <div key={p.month} className="flex-1 flex flex-col items-center gap-2 group relative">
                   {/* Hover tooltip */}
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-150 pointer-events-none z-20">
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transition-all duration-150 ease-out pointer-events-none z-20">
                     <div className="bg-popover border border-border rounded-lg px-2.5 py-1.5 shadow-lg whitespace-nowrap text-center">
                       <p className="text-xs font-bold text-foreground">{formatCurrency(p.total, currency)}</p>
                     </div>

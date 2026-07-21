@@ -55,7 +55,7 @@ export default async function SubscriptionList({
   const viewSuffix = NORMALIZE_VIEW_SUFFIX[view];
 
   return (
-    <div className="space-y-3">
+    <div className="h-full flex flex-col space-y-3 min-h-0">
       <FilterBar count={sorted.length} />
 
       {sorted.length === 0 && (
@@ -70,10 +70,10 @@ export default async function SubscriptionList({
       )}
 
       {sorted.length > 0 && (
-        <div className="border border-border rounded-xl overflow-hidden divide-y divide-border/70 bg-card">
+        <div className="flex-1 flex flex-col border border-border rounded-xl overflow-hidden min-h-0 bg-card">
 
           {/* Column header — always shown */}
-          <div className="flex items-center gap-4 px-4 py-2 bg-muted/30 border-b border-border/40">
+          <div className="flex-shrink-0 flex items-center gap-4 px-4 py-2 bg-muted/30 border-b border-border/40">
             <span className="flex-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               Subscription
             </span>
@@ -92,12 +92,12 @@ export default async function SubscriptionList({
             <span className={`text-[11px] font-semibold uppercase tracking-wider min-w-[80px] text-right ${view !== "original" ? "text-primary" : "text-muted-foreground"}`}>
               {view === "original" ? "Amount" : `${NORMALIZE_VIEW_SUFFIX[view].replace("/", "")} equiv.`}
             </span>
-            <span className="w-[60px]" />
-          </div>
+            </div>
 
 
-          {sorted.map((sub) => {
-            const days         = daysUntil(sub.nextPaymentDate, now);
+          <div className="flex-1 overflow-y-auto divide-y divide-border/70 min-h-0">
+            {sorted.map((sub) => {
+              const days         = daysUntil(sub.nextPaymentDate, now);
             const isUrgent     = days <= 7;
             const isVeryUrgent = days <= 2;
             const isNormalized = view !== "original";
@@ -156,7 +156,7 @@ export default async function SubscriptionList({
                 </div>
 
                 {/* Actions */}
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 flex-shrink-0">
+                <div className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity flex items-center gap-0.5 flex-shrink-0">
                   <EditSubscriptionDialog
                     id={sub.id}
                     defaultValues={{
@@ -173,6 +173,7 @@ export default async function SubscriptionList({
               </div>
             );
           })}
+          </div>
         </div>
       )}
     </div>

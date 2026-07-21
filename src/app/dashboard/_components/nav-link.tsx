@@ -14,7 +14,7 @@ export function DashboardNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center gap-0.5">
+    <nav className="flex items-center gap-1 bg-muted/40 p-1 rounded-full border border-border/50 backdrop-blur-md">
       {NAV_ITEMS.map(({ href, label, Icon }) => {
         const isActive = href === "/dashboard"
           ? pathname === "/dashboard"
@@ -24,10 +24,10 @@ export function DashboardNav() {
           <Link
             key={href}
             href={href}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
               isActive
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                ? "bg-background text-primary font-bold"
+                : "text-muted-foreground hover:text-foreground hover:bg-background/40"
             }`}
           >
             <Icon className="h-3.5 w-3.5" />

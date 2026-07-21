@@ -3,6 +3,8 @@
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -46,5 +48,29 @@ export async function registerUser(formData: FormData): Promise<{ error?: string
   } catch (error) {
     console.error("Registration error:", error);
     return { error: "Something went wrong during registration. Please try again." };
+  }
+}
+
+export async function authenticate(
+  prevState: { error: string | undefined } | undefined,
+  formData: FormData,
+): Promise<{ error: string | undefined }> {
+  try {
+    await signIn("credentials", {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      redirectTo: "/dashboard",
+    });
+    return { error: undefined };
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return { error: "Invalid email or password." };
+        default:
+          return { error: "Something went wrong." };
+      }
+    }
+    throw error;
   }
 }

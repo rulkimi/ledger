@@ -9,6 +9,7 @@ import { formatCurrency } from "@/lib/currency";
 import { Card, CardContent } from "@/components/ui/card";
 import { Wallet, TrendingUp, Calendar, Bell } from "lucide-react";
 import { addDays } from "date-fns";
+import { FadeInStaggerGroup, FadeInStaggerItem } from "@/components/ui/motion-wrapper";
 
 export default async function SummaryCards({ category }: { category?: string }) {
   const session = await auth();
@@ -80,26 +81,27 @@ export default async function SummaryCards({ category }: { category?: string }) 
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <FadeInStaggerGroup className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {cards.map((c) => (
-        <Card
-          key={c.label}
-          className={`rounded-2xl border-border/60 border-l-4 ${c.accent} shadow-sm hover:shadow-md transition-shadow overflow-hidden`}
-        >
-          <CardContent className="p-5">
-            <div className="flex items-start justify-between mb-4">
-              <div className={`p-2 rounded-lg ${c.iconBg}`}>
-                <c.icon className={`h-4 w-4 ${c.iconColor}`} />
+        <FadeInStaggerItem key={c.label}>
+          <Card
+            className={`rounded-2xl border-border/60 border-l-4 ${c.accent} shadow-sm hover:shadow-md transition-shadow overflow-hidden h-full`}
+          >
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className={`p-2 rounded-lg ${c.iconBg}`}>
+                  <c.icon className={`h-4 w-4 ${c.iconColor}`} />
+                </div>
               </div>
-            </div>
-            <p className="text-xl sm:text-2xl font-extrabold tracking-tight leading-none text-foreground">
-              {c.value}
-            </p>
-            <p className="text-xs font-semibold text-muted-foreground mt-2 leading-tight">{c.label}</p>
-            <p className="text-[11px] text-muted-foreground/60 mt-0.5">{c.sub}</p>
-          </CardContent>
-        </Card>
+              <p className="text-xl sm:text-2xl font-extrabold tracking-tight leading-none text-foreground">
+                {c.value}
+              </p>
+              <p className="text-xs font-semibold text-muted-foreground mt-2 leading-tight">{c.label}</p>
+              <p className="text-[11px] text-muted-foreground/60 mt-0.5">{c.sub}</p>
+            </CardContent>
+          </Card>
+        </FadeInStaggerItem>
       ))}
-    </div>
+    </FadeInStaggerGroup>
   );
 }

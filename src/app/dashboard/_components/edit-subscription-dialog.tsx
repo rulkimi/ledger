@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,7 +41,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState<string | null>(null);
   const [frequency, setFrequency] = useState<BillingFrequency>(defaultValues.billingFrequency);
-  const [category, setCategory]   = useState<string>(defaultValues.category ?? "");
+  const [category, setCategory]   = useState<string>(defaultValues.category || "none");
 
   async function action(formData: FormData) {
     setLoading(true);
@@ -52,7 +52,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
         cost:             Number(formData.get("cost")),
         billingFrequency: frequency as ServerBillingFrequency,
         startDate:        new Date(formData.get("startDate") as string),
-        category:         category || undefined,
+        category:         category !== "none" ? category : undefined,
         notes:            (formData.get("notes") as string) || undefined,
       });
       setOpen(false);
@@ -142,12 +142,12 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
 
           <div className="space-y-1.5">
             <Label htmlFor="edit-category" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Category</Label>
-            <Select value={category} onValueChange={(v) => setCategory(v ?? "")}>
-              <SelectTrigger id="edit-category" className="bg-muted/30 border-border/60">
+            <Select value={category} onValueChange={(v) => setCategory(v ?? "none")}>
+              <SelectTrigger id="edit-category" className="bg-muted/30 border-border/60 w-full">
                 <SelectValue placeholder="Select a category…" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No category</SelectItem>
+                <SelectItem value="none">No category</SelectItem>
                 {CATEGORIES.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
@@ -168,14 +168,14 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <DialogFooter>
             <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>
               Cancel
             </Button>
             <Button type="submit" size="sm" disabled={loading} className="min-w-[90px]">
               {loading ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Saving…</> : "Save changes"}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

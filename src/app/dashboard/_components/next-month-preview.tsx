@@ -58,9 +58,9 @@ export default async function NextMonthPreview({ category }: { category?: string
   }
 
   return (
-    <div className="border border-border/60 rounded-xl overflow-hidden bg-card">
+    <div className="h-full flex flex-col border border-border/60 rounded-xl overflow-hidden bg-card min-h-0">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
+      <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-border/40">
         <div className="flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-primary" />
           <p className="text-xs font-semibold">
@@ -75,7 +75,7 @@ export default async function NextMonthPreview({ category }: { category?: string
       </div>
 
       {/* Payment rows */}
-      <div className="divide-y divide-border/40">
+      <div className="flex-1 overflow-y-auto divide-y divide-border/40 min-h-0">
         {hits.map((h, i) => (
           <div key={i} className="flex items-center justify-between px-4 py-2.5 hover:bg-muted/20 transition-colors">
             <div className="flex items-center gap-3 min-w-0">
@@ -97,7 +97,7 @@ export default async function NextMonthPreview({ category }: { category?: string
       </div>
 
       {/* Total footer */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-muted/20 border-t border-border/40">
+      <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-muted/20 border-t border-border/40">
         <p className="text-[11px] text-muted-foreground font-medium">Total to prepare</p>
         <p className="text-sm font-extrabold font-mono">{formatCurrency(total, currency)}</p>
       </div>

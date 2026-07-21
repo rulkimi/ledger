@@ -5,52 +5,54 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { DashboardNav } from "./_components/nav-link";
+import { PageTransition } from "@/components/ui/page-transition";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session?.user) redirect("/signin");
 
-  const initials = session.user.name
-    ? session.user.name.split(" ").filter(Boolean).map((n) => n[0]).join("").toUpperCase().slice(0, 2)
-    : (session.user.email?.[0] ?? "U").toUpperCase();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       <div className="fixed inset-0 -z-10 mesh-bg pointer-events-none" />
 
       {/* Top bar */}
-      <header className="sticky top-0 z-50 glass border-b border-border/40 h-14">
+      <header className="sticky top-0 z-50 liquid-glass h-16">
         <div className="container mx-auto max-w-5xl h-full flex items-center justify-between gap-4 px-4 sm:px-6">
 
           {/* Logo + nav */}
           <div className="flex items-center gap-5">
-            <Link href="/" className="font-extrabold text-base tracking-tight brand-text flex-shrink-0">
+            <Link href="/" className="font-extrabold text-xl tracking-tight brand-text flex-shrink-0">
               Ledger
             </Link>
             <DashboardNav />
           </div>
 
-          {/* User + sign out */}
-          <div className="flex items-center gap-2.5">
-            <div className="hidden sm:flex flex-col items-end leading-tight">
-              <span className="text-xs font-semibold text-foreground">{session.user.name ?? "User"}</span>
-              <span className="text-[11px] text-muted-foreground">{session.user.email}</span>
+          {/* User + theme toggle + sign out */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5 bg-muted/40 py-1 pl-3.5 pr-1.5 sm:pr-2 rounded-full border border-border/50 backdrop-blur-md">
+              <span className="text-xs font-bold text-foreground truncate max-w-[120px]">
+                {session.user.name ?? "User"}
+              </span>
+              <div className="h-3.5 w-px bg-border/60" />
+              <ThemeToggle />
             </div>
-            <div className="h-8 w-8 rounded-full brand-gradient flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0">
-              {initials}
-            </div>
+
             <form action={async () => { "use server"; await signOut({ redirectTo: "/" }); }}>
-              <Button size="sm" variant="ghost" type="submit" className="h-8 gap-1 text-muted-foreground hover:text-foreground px-2" aria-label="Sign out">
+              <Button size="sm" variant="ghost" type="submit" className="h-8 gap-1 text-muted-foreground hover:text-foreground px-2 rounded-full" aria-label="Sign out">
                 <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline text-xs">Sign Out</span>
+                <span className="hidden sm:inline text-xs font-medium">Sign Out</span>
               </Button>
             </form>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto max-w-5xl px-4 sm:px-6 py-6 sm:py-8">
-        {children}
+      <main className="flex-1 min-h-0 container mx-auto max-w-5xl px-4 sm:px-6 py-6 sm:py-8 flex flex-col">
+        <PageTransition>
+          {children}
+        </PageTransition>
       </main>
     </div>
   );
