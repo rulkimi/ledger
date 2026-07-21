@@ -49,7 +49,7 @@ export function DeleteSubscriptionButton({ id, name }: { id: string; name: strin
           )}
 
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete <strong className="text-foreground font-semibold">"{name}"</strong>? This action cannot be undone.
+            Are you sure you want to delete <strong className="text-foreground font-semibold">&quot;{name}&quot;</strong>? This action cannot be undone.
           </p>
 
           <DialogFooter>
