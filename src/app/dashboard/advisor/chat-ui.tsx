@@ -156,6 +156,7 @@ export function ChatUI() {
   const [chatToDelete, setChatToDelete] = useState<string | null>(null);
   const initialLoadDone = useRef(false);
   const lastSavedMessagesRef = useRef<string>("[]");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function loadChat() {
@@ -194,6 +195,7 @@ export function ChatUI() {
       });
       lastSavedMessagesRef.current = "[]";
       setMessages([]);
+      setTimeout(() => inputRef.current?.focus(), 50);
     } catch (e) {
       console.error(e);
     } finally {
@@ -637,6 +639,7 @@ export function ChatUI() {
           className="flex items-center gap-2 max-w-4xl mx-auto bg-muted/30 border border-border/50 rounded-full pl-4 pr-1.5 py-1.5 shadow-sm focus-within:ring-2 focus-within:ring-primary/50 transition-all"
         >
           <input
+            ref={inputRef}
             className="flex-1 bg-transparent border-none focus:outline-none text-sm h-9"
             value={input}
             placeholder="Ask about your subscriptions..."
