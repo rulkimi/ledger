@@ -28,7 +28,7 @@ export async function GET() {
       const currency = session.user.currency || "MYR";
 
       const response = await generateText({
-        model: google("gemini-3.5-flash"),
+        model: google("gemini-3.5-flash-lite"),
         system: "You are Cento, a sharp, opinionated financial subscription advisor. Write a very brief, concise 2-sentence summary analysis or playful roast of the user's active subscriptions list. Focus on their total monthly burn, categories, or duplicate services if any. Keep it under 200 characters, straight to the point, sharp, and helpful. Do not start with greetings, introductions, or robotic transitions.",
         prompt: `User's preferred currency: ${currency}. Total Average Monthly Burn: ${totalBurn.toFixed(2)}. Active Subscriptions:\n${formattedSubs}`,
       });
