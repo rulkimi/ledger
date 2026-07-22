@@ -28,18 +28,18 @@ export async function createSubscription(data: SubscriptionInput) {
   const userId = await getAuthenticatedUserId();
   const parsed = subscriptionSchema.parse(data);
   await prisma.subscription.create({ data: { ...parsed, userId } });
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard", "layout");
 }
 
 export async function updateSubscription(id: string, data: SubscriptionInput) {
   const userId = await getAuthenticatedUserId();
   const parsed = subscriptionSchema.parse(data);
   await prisma.subscription.update({ where: { id, userId }, data: parsed });
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard", "layout");
 }
 
 export async function deleteSubscription(id: string) {
   const userId = await getAuthenticatedUserId();
   await prisma.subscription.delete({ where: { id, userId } });
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard", "layout");
 }

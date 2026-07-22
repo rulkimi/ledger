@@ -7,6 +7,7 @@ import { LogOut } from "lucide-react";
 import { DashboardNav } from "./_components/nav-link";
 import { PageTransition } from "@/components/ui/page-transition";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SlideOverChat } from "./_components/slide-over-chat";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -54,6 +55,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {children}
         </PageTransition>
       </main>
+      <SlideOverChat />
     </div>
   );
 }

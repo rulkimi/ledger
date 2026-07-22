@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { href: "/dashboard",          label: "Overview",  Icon: LayoutDashboard },
   { href: "/dashboard/bills",    label: "Bills",     Icon: List            },
   { href: "/dashboard/calendar", label: "Calendar",  Icon: CalendarDays    },
-  { href: "/dashboard/advisor",  label: "Advisor",   Icon: Sparkles        },
+  { href: "/dashboard/advisor",  label: "Cento",   Icon: Sparkles        },
 ];
 
 export function DashboardNav() {

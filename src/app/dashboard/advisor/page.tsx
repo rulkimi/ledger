@@ -1,8 +1,9 @@
 import { Metadata } from "next";
+import { Sparkles } from "lucide-react";
 import { ChatUI } from "./chat-ui";
 
 export const metadata: Metadata = {
-  title: "AI Advisor | Ledger",
+  title: "Cento | Ledger",
   description: "Your personal financial AI advisor.",
 };
 
@@ -12,12 +13,12 @@ export default function AdvisorPage() {
       <div className="flex-1 flex flex-col bg-card border border-border/50 rounded-xl overflow-hidden shadow-sm">
         {/* Header */}
         <div className="border-b border-border/50 bg-muted/20 px-6 py-4 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full brand-gradient flex items-center justify-center glow-ring">
-            <span className="text-xl">✨</span>
+          <div className="h-10 w-10 rounded-full brand-gradient flex items-center justify-center shadow-sm">
+            <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="font-bold text-foreground">Ledger AI</h1>
-            <p className="text-xs text-muted-foreground">Powered by Gemini 3.5 Flash</p>
+            <h1 className="font-bold text-foreground">Cento</h1>
+            <p className="text-sm text-muted-foreground">Your opinionated financial assistant</p>
           </div>
         </div>
         

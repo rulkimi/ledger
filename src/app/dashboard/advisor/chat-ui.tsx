@@ -423,9 +423,9 @@ export function ChatUI() {
               <Sparkles className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold mb-2">Ready to talk money?</h2>
+              <h2 className="text-xl font-bold mb-2">Hi, I&apos;m Cento.</h2>
               <p className="text-sm text-muted-foreground">
-                I can analyze your spending, roast your subscriptions, or help you manage your bills directly.
+                Your personal AI financial advisor. I can analyze your spending, roast your subscriptions, or help you manage your bills directly.
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl mt-4">
