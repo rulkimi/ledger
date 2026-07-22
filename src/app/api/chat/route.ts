@@ -13,6 +13,9 @@ export async function POST(req: Request) {
   const userId = session.user.id;
   const currency = session.user.currency ?? "MYR";
 
+  // Prefetch subscriptions up-front on the server to avoid slow, quota-consuming round-trip tool calls
+  const subscriptions = await prisma.subscription.findMany({ where: { userId } });
+
   const body = await req.json();
   const messages = body.messages || body; // Fallback if body is directly the array
   console.log("SERVER: Received messages:", JSON.stringify(messages, null, 2));
@@ -33,24 +36,18 @@ export async function POST(req: Request) {
     maxSteps: 5,
     system: `You are Cento, a highly opinionated, sharp, and helpful financial subscription advisor (always ready to give your "2 cents").
 You help users manage their subscriptions, analyze their spending, and you are NOT afraid to roast them for wasting money on redundant subscriptions (like having Netflix AND Hulu AND Max if they barely watch TV, or 4 different AI tools).
-You MUST use your tools to fetch their actual subscription data before giving specific advice.
+
+Here is the user's current subscriptions/bills data (pre-fetched up-front):
+${JSON.stringify(subscriptions, null, 2)}
+
 Always format currency in their preferred currency: ${currency}.
 Today's date is: ${new Date().toISOString().split('T')[0]}. Use this to correctly calculate any relative dates the user mentions (e.g. "today", "yesterday", "last week").
 We also support a ONE_TIME billing frequency for one-time payments, debts, or single bills (where the payment is made once on the start date and doesn't recur in future months, and has no end date). If a user wants to track a one-time bill/debt, use ONE_TIME as the billingFrequency and omit the endDate.
 CRITICAL: If a user specifies a future date for a one-time payment/debt (e.g., "I'm going to pay Farid in 2 months" or "due on Sept 15"), you MUST calculate that future target date relative to Today's date and set the 'startDate' parameter to that future target date (not today's date). A ONE_TIME payment is scheduled exactly on its 'startDate'.
 CRITICAL: Keep your responses EXTREMELY concise. Use short bullet points, max 2-3 short sentences total per response. Get straight to the point. No fluff.
 Allow the user to log their one-time debts or payments in NetLedger using the ONE_TIME frequency instead of forcing them into monthly/yearly plans.
-CRITICAL: You must ALWAYS output a short chat message BEFORE calling ANY tool (including getSubscriptions). If you are about to check their database, say something like "Let me take a look at your current subscriptions..." first.
-CRITICAL: When the user asks to add or delete a subscription, ALWAYS call getSubscriptions first. After reviewing the data, output a genuine, personalized chat message analyzing their request (e.g., roasting them if they are adding a 3rd streaming service). DO NOT just say a robotic "Let me add that." Give real advice, and THEN call the tool to draft the addition/deletion.`,
+CRITICAL: When the user asks to add or delete a subscription, output a genuine, personalized chat message analyzing their request (e.g., roasting them if they are adding a 3rd streaming service). DO NOT just say a robotic "Let me add that." Give real advice, and THEN call the tool to draft the addition/deletion.`,
     tools: {
-      getSubscriptions: {
-        description: "Get all current subscriptions and bills for the user.",
-        inputSchema: z.object({}),
-        execute: async () => {
-          const subs = await prisma.subscription.findMany({ where: { userId } });
-          return JSON.parse(JSON.stringify(subs));
-        },
-      },
       addSubscription: {
         description: "Call this tool to prompt the user to confirm adding a subscription. The UI will wait for them. The tool result will tell you if they Confirmed (and saved) or Canceled.",
         inputSchema: z.object({
