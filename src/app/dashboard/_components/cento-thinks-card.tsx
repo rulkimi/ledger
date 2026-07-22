@@ -70,12 +70,12 @@ export default function CentoThinksCard({ className }: { className?: string }) {
       {/* Verdict body */}
       <div className="p-4 flex flex-col justify-between gap-3 flex-1 min-h-0">
         {loading ? (
-          <div className="italic text-muted-foreground/60 bg-muted/20 px-3.5 py-3 rounded-xl border border-border/30 animate-pulse text-xs flex items-center gap-2">
-            <Loader2 className="h-3 w-3 animate-spin text-primary shrink-0" />
+          <div className="flex-1 min-h-0 overflow-y-auto italic text-muted-foreground/60 bg-muted/20 px-3.5 py-3 rounded-xl border border-border/30 animate-pulse text-xs flex items-start gap-2">
+            <Loader2 className="h-3 w-3 animate-spin text-primary shrink-0 mt-0.5" />
             Cento is analyzing your spending...
           </div>
         ) : (
-          <div className="prose prose-sm dark:prose-invert max-w-none break-words italic text-muted-foreground/90 bg-muted/20 px-3.5 py-3 rounded-xl border border-border/30 text-xs leading-relaxed">
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin prose prose-sm dark:prose-invert max-w-none break-words italic text-muted-foreground/90 bg-muted/20 px-3.5 py-3 rounded-xl border border-border/30 text-xs leading-relaxed [&>p:not(:last-child)]:mb-3 [&>ul]:mt-1 [&>ul]:mb-3 [&>li]:mb-1">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {verdict || ""}
             </ReactMarkdown>
@@ -132,7 +132,7 @@ export default function CentoThinksCard({ className }: { className?: string }) {
             href="/dashboard/advisor"
             className="group flex items-center justify-between w-full text-xs font-semibold py-2 px-3 rounded-lg border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors text-primary"
           >
-            <span>Open Cento Advisor</span>
+            <span>Open Cento</span>
             <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>

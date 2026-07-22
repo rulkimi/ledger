@@ -4,7 +4,6 @@ import StatsStrip from "./_components/stats-strip";
 import NextMonthPreview from "./_components/next-month-preview";
 import CentoThinksCard from "./_components/cento-thinks-card";
 import { AddSubscriptionDialog } from "./_components/add-subscription-dialog";
-import PeakMonthsCard from "./_components/peak-months-card";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Metadata } from "next";
@@ -44,12 +43,9 @@ export default async function DashboardPage() {
           <NextMonthPreview />
         </Suspense>
 
-        {/* Right col: Cento (grows) + peak months + quick links */}
+        {/* Right col: Cento (grows) + quick links */}
         <div className="flex flex-col gap-3 md:min-h-0 md:h-full">
           <CentoThinksCard className="md:flex-1 md:min-h-0" />
-          <Suspense fallback={<Skeleton className="h-16 w-full rounded-xl" />}>
-            <PeakMonthsCard />
-          </Suspense>
 
           {/* Quick links — only shown here on desktop */}
           <div className="hidden md:grid grid-cols-2 gap-3">

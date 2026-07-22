@@ -683,7 +683,7 @@ export function ChatUI() {
                   >
                     {/* Message Content */}
                     {hasText && (
-                      <div className="prose prose-sm dark:prose-invert max-w-none break-words font-sans">
+                      <div className="prose prose-sm dark:prose-invert max-w-none break-words font-sans [&>p:not(:last-child)]:mb-3">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                           {text}
                         </ReactMarkdown>
@@ -723,7 +723,7 @@ export function ChatUI() {
                       if (p.input?.messageToUser) {
                         return (
                           <div className="max-w-[85%] rounded-2xl px-4 py-3 shadow-md bg-muted/40 text-foreground rounded-tl-sm border border-border/50 self-start mb-2">
-                            <div className="prose prose-sm dark:prose-invert max-w-none break-words font-sans">
+                            <div className="prose prose-sm dark:prose-invert max-w-none break-words font-sans [&>p:not(:last-child)]:mb-3">
                               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                 {p.input.messageToUser}
                               </ReactMarkdown>

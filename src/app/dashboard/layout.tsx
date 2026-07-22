@@ -1,19 +1,21 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { signOut } from "@/auth";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
 import { DashboardNav } from "./_components/nav-link";
 import { PageTransition } from "@/components/ui/page-transition";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { SlideOverChat } from "./_components/slide-over-chat";
+import { SettingsDialog } from "./_components/settings-dialog";
+import prisma from "@/lib/prisma";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session?.user) redirect("/signin");
+  if (!session?.user?.id) redirect("/signin");
 
+  const dbUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { monthlyIncome: true }
+  });
 
   return (
     <div className="min-h-screen md:h-screen flex flex-col bg-background md:overflow-hidden">
@@ -35,16 +37,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <DashboardNav />
           </div>
 
-          {/* Theme toggle + sign out grouped */}
-          <div className="flex items-center gap-1.5 bg-muted/40 p-1 pr-1.5 rounded-full border border-border/50 backdrop-blur-md">
-            <ThemeToggle />
-            <div className="h-3.5 w-px bg-border/60" />
-            <form action={async () => { "use server"; await signOut({ redirectTo: "/" }); }}>
-              <Button size="sm" variant="ghost" type="submit" className="h-7 gap-1 text-muted-foreground hover:text-foreground px-2.5 rounded-full" aria-label="Sign out">
-                <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline text-[11px] font-bold">Sign Out</span>
-              </Button>
-            </form>
+          {/* Settings Button */}
+          <div className="flex items-center bg-muted/40 p-1 rounded-full border border-border/50 backdrop-blur-md">
+            <SettingsDialog user={{
+              name: session.user.name,
+              email: session.user.email,
+              monthlyIncome: dbUser?.monthlyIncome ? Number(dbUser.monthlyIncome) : null
+            }} />
           </div>
         </div>
       </header>

@@ -15,6 +15,7 @@ model User {
   image         String?
   password      String?
   currency      String         @default("MYR")
+  monthlyIncome Decimal?       @db.Decimal(10, 2)
   subscriptions Subscription[]
   chatSessions  ChatSession[]
 }

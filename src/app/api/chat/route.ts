@@ -13,8 +13,11 @@ export async function POST(req: Request) {
   const userId = session.user.id;
   const currency = session.user.currency ?? "MYR";
 
-  // Prefetch subscriptions up-front on the server to avoid slow, quota-consuming round-trip tool calls
-  const subscriptions = await prisma.subscription.findMany({ where: { userId } });
+  const user = await prisma.user.findUnique({ where: { id: userId }, include: { subscriptions: true } });
+  if (!user) return new Response("Unauthorized", { status: 401 });
+  
+  const subscriptions = user.subscriptions;
+  const monthlyIncome = user.monthlyIncome ? Number(user.monthlyIncome) : null;
 
   const body = await req.json();
   const messages = body.messages || body; // Fallback if body is directly the array
@@ -39,6 +42,10 @@ You help users manage their subscriptions, analyze their spending, and you are N
 
 Here is the user's current subscriptions/bills data (pre-fetched up-front):
 ${JSON.stringify(subscriptions, null, 2)}
+
+User's Monthly Income: ${monthlyIncome ? `${currency} ${monthlyIncome}` : 'Not provided yet'}.
+If the user's monthly income is provided (and greater than 0), evaluate their "burn rate" (total monthly cost of all active subscriptions / monthly income). If it's dangerously high (e.g., >30-40%), roast them mercilessly for burning too much of their salary on bills. 
+CRITICAL: If their income is 0 or "Not provided yet", DO NOT assume they have zero money, are unemployed, or are broke. Simply assume they haven't configured that setting in the app yet. You can playfully suggest they set their income in the Settings menu so you can judge their burn rate properly.
 
 Always format currency in their preferred currency: ${currency}.
 Today's date is: ${new Date().toISOString().split('T')[0]}. Use this to correctly calculate any relative dates the user mentions (e.g. "today", "yesterday", "last week").
