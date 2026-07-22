@@ -15,19 +15,25 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL
+  ? process.env.NEXT_PUBLIC_APP_URL
+  : process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
+
+const siteDescription = "Track subscriptions, calculate true monthly burn, and forecast cash-flow. Stay in complete control of bills.";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://netledger.com"),
+  metadataBase: new URL(baseUrl),
   title: "NetLedger — Personal Finance & Subscription Tracker",
-  description:
-    "Know exactly what you owe, when you owe it. NetLedger gives you accurate cash-flow forecasting and prorated budgeting for all your subscriptions.",
+  description: siteDescription,
   icons: {
     icon: "/ledger.svg",
   },
   openGraph: {
     title: "NetLedger — Personal Finance & Subscription Tracker",
-    description:
-      "Know exactly what you owe, when you owe it. NetLedger gives you accurate cash-flow forecasting and prorated budgeting for all your subscriptions.",
-    url: "https://netledger.com",
+    description: siteDescription,
+    url: baseUrl,
     siteName: "NetLedger",
     images: [
       {
@@ -43,8 +49,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "NetLedger — Personal Finance & Subscription Tracker",
-    description:
-      "Know exactly what you owe, when you owe it. NetLedger gives you accurate cash-flow forecasting and prorated budgeting for all your subscriptions.",
+    description: siteDescription,
     images: ["/og-image.png"],
   },
 };
