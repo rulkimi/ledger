@@ -16,7 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
+    <div className="min-h-screen md:h-screen flex flex-col bg-background md:overflow-hidden">
       <div className="fixed inset-0 -z-10 mesh-bg pointer-events-none" />
 
       {/* Top bar */}
@@ -24,12 +24,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="container mx-auto max-w-5xl h-full flex items-center justify-between gap-4 px-4 sm:px-6">
 
           {/* Logo + nav */}
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-2 md:gap-5">
             <Link href="/" className="flex-shrink-0 flex items-center">
               {/* Mobile Logo */}
-              <Image src="/ledger.svg" alt="NetLedger" width={28} height={28} className="w-7 h-7 object-contain sm:hidden" />
+              <Image priority src="/ledger.svg" alt="NetLedger" width={28} height={28} className="w-7 h-7 object-contain sm:hidden" />
               {/* Desktop Logo */}
-              <Image src="/ledger-title.svg" alt="NetLedger" width={102} height={32} className="h-8 w-auto object-contain hidden sm:block" />
+              <Image priority style={{ width: "auto" }} src="/ledger-title.svg" alt="NetLedger" width={102} height={32} className="h-8 w-auto object-contain hidden sm:block" />
               <span className="sr-only">NetLedger</span>
             </Link>
             <DashboardNav />
@@ -49,7 +49,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 container mx-auto max-w-5xl px-4 sm:px-6 py-6 sm:py-8 flex flex-col">
+      <main className="flex-1 md:min-h-0 md:overflow-hidden flex flex-col container mx-auto max-w-5xl px-4 sm:px-6 py-5 sm:py-8">
         <PageTransition>
           {children}
         </PageTransition>

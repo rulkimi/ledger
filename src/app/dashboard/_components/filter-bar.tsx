@@ -33,17 +33,17 @@ export function FilterBar({ count }: { count: number }) {
   }
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex items-center justify-between gap-1.5 w-full flex-wrap sm:flex-nowrap">
       {/* Bill count — far left */}
-      <span className="text-xs text-muted-foreground font-medium mr-auto tabular-nums">
+      <span className="text-xs text-muted-foreground font-medium sm:mr-auto tabular-nums shrink-0">
         {count} bill{count !== 1 ? "s" : ""}
       </span>
 
-      {/* View as — normalize amounts */}
-      <div className="flex items-center gap-1.5">
-        <span className="text-[11px] text-muted-foreground hidden sm:inline">View as</span>
+      {/* Selects: inline, small & compact */}
+      <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
+        {/* View as */}
         <Select value={view} onValueChange={(v) => update("view", v ?? "original")}>
-          <SelectTrigger className="h-8 text-xs w-auto min-w-[100px] border-border/50 bg-transparent">
+          <SelectTrigger className="h-7 text-[11px] w-[85px] sm:w-[95px] border-border/50 bg-transparent shrink-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -53,47 +53,44 @@ export function FilterBar({ count }: { count: number }) {
             <SelectItem value="yearly">Yearly</SelectItem>
           </SelectContent>
         </Select>
+
+        {/* Category */}
+        <Select value={category} onValueChange={(v) => update("category", v ?? "all")}>
+          <SelectTrigger className="h-7 text-[11px] w-[110px] sm:w-[130px] border-border/50 bg-transparent shrink-0">
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c} value={c}>{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Sort */}
+        <Select value={sort} onValueChange={(v) => update("sort", v ?? "date")}>
+          <SelectTrigger className="h-7 text-[11px] w-[95px] sm:w-[110px] border-border/50 bg-transparent shrink-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="date">Due Date</SelectItem>
+            <SelectItem value="cost">Highest Cost</SelectItem>
+            <SelectItem value="name">Name A–Z</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Reset */}
+        {hasFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 px-1.5 text-[11px] text-muted-foreground hover:text-foreground gap-0.5 shrink-0 hover:bg-muted/40"
+            onClick={() => router.replace(pathname)}
+          >
+            <X className="h-3 w-3" /> Reset
+          </Button>
+        )}
       </div>
-
-      {/* Divider */}
-      <div className="h-4 w-px bg-border/60 hidden sm:block" />
-
-      {/* Category */}
-      <Select value={category} onValueChange={(v) => update("category", v ?? "all")}>
-        <SelectTrigger className="h-8 text-xs w-auto min-w-[130px] border-border/50 bg-transparent">
-          <SelectValue placeholder="Category" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Categories</SelectItem>
-          {CATEGORIES.map((c) => (
-            <SelectItem key={c} value={c}>{c}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      {/* Sort */}
-      <Select value={sort} onValueChange={(v) => update("sort", v ?? "date")}>
-        <SelectTrigger className="h-8 text-xs w-auto min-w-[120px] border-border/50 bg-transparent">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="date">Due Date</SelectItem>
-          <SelectItem value="cost">Highest Cost</SelectItem>
-          <SelectItem value="name">Name A–Z</SelectItem>
-        </SelectContent>
-      </Select>
-
-      {/* Reset */}
-      {hasFilters && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground gap-1"
-          onClick={() => router.replace(pathname)}
-        >
-          <X className="h-3 w-3" /> Reset
-        </Button>
-      )}
     </div>
   );
 }

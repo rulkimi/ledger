@@ -12,7 +12,6 @@ export default async function NextMonthPreview({ category }: { category?: string
   const currency = session.user.currency ?? "MYR";
   const now      = new Date();
 
-  // "Next month" = the calendar month after today
   const nextMonthStart = startOfMonth(addMonths(now, 1));
   const nextMonthEnd   = endOfMonth(nextMonthStart);
   const monthLabel     = format(nextMonthStart, "MMMM yyyy");
@@ -21,12 +20,10 @@ export default async function NextMonthPreview({ category }: { category?: string
     where: { userId: session.user.id, isActive: true, ...(category ? { category } : {}) },
   });
 
-  // Collect every individual payment that falls in next calendar month
   type PaymentHit = { name: string; date: Date; amount: number; category: string | null };
   const hits: PaymentHit[] = [];
 
   for (const sub of subs) {
-    // Scan 2 months ahead so we always capture the full next month
     const payments = getPaymentsInWindow(
       sub.startDate,
       sub.billingFrequency,
@@ -41,9 +38,7 @@ export default async function NextMonthPreview({ category }: { category?: string
     }
   }
 
-  // Sort by date
   hits.sort((a, b) => a.date.getTime() - b.date.getTime());
-
   const total = hits.reduce((acc, h) => acc + h.amount, 0);
 
   if (hits.length === 0) {
@@ -58,9 +53,10 @@ export default async function NextMonthPreview({ category }: { category?: string
   }
 
   return (
-    <div className="h-full flex flex-col border border-border/60 rounded-xl overflow-hidden bg-card min-h-0">
-      {/* Header */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-border/40">
+    // h-full + flex flex-col + min-h-0 is the key — lets the flex-1 list scroll inside
+    <div className="md:h-full flex flex-col border border-border/60 rounded-xl overflow-hidden bg-card min-h-0">
+      {/* Header — fixed height */}
+      <div className="flex-shrink-0 flex items-center justify-between px-4 h-12 border-b border-border/40">
         <div className="flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-primary" />
           <p className="text-xs font-semibold">
@@ -74,7 +70,7 @@ export default async function NextMonthPreview({ category }: { category?: string
         </div>
       </div>
 
-      {/* Payment rows */}
+      {/* Payment rows — flex-1 + overflow-y-auto = scrolls inside the card */}
       <div className="flex-1 overflow-y-auto divide-y divide-border/40 min-h-0">
         {hits.map((h, i) => (
           <div key={i} className="flex items-center justify-between px-4 py-2.5 hover:bg-muted/20 transition-colors">
@@ -96,8 +92,8 @@ export default async function NextMonthPreview({ category }: { category?: string
         ))}
       </div>
 
-      {/* Total footer */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-muted/20 border-t border-border/40">
+      {/* Total footer — fixed height */}
+      <div className="flex-shrink-0 flex items-center justify-between px-4 h-12 bg-muted/20 border-t border-border/40">
         <p className="text-[11px] text-muted-foreground font-medium">Total to prepare</p>
         <p className="text-sm font-extrabold font-mono">{formatCurrency(total, currency)}</p>
       </div>

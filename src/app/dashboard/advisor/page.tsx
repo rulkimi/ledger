@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Sparkles } from "lucide-react";
 import { ChatUI } from "./chat-ui";
 import { auth } from "@/auth";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Cento | NetLedger",
@@ -27,7 +28,9 @@ export default async function AdvisorPage() {
         </div>
         
         {/* Chat UI */}
-        <ChatUI />
+        <Suspense>
+          <ChatUI />
+        </Suspense>
       </div>
     </div>
   );

@@ -186,7 +186,26 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-color: color-mix(in oklch, var(--muted) 40%, transparent) var(--background);
+    scrollbar-width: thin;
   }
+  
+  /* Webkit scrollbar styling to match background */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--muted) 40%, transparent);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+  }
+
   html {
     overflow-y: scroll;
   }
@@ -229,6 +248,15 @@
   }
   .transition-spring {
     transition-timing-function: var(--ease-out-strong);
+  }
+  
+  /* Utility to completely hide scrollbars visually but retain scroll action */
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
   }
 }
 

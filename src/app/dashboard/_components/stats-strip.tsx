@@ -40,13 +40,13 @@ export default async function StatsStrip({ category }: { category?: string }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-border border border-border rounded-xl overflow-hidden bg-card">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-border/60 border border-border/60 rounded-xl overflow-hidden">
       {stats.map((s) => (
-        <div key={s.label} className="flex items-center gap-3 px-4 py-3">
-          <s.icon className={`h-4 w-4 flex-shrink-0 ${s.urgent ? "text-destructive" : "text-muted-foreground"}`} />
-          <div className="min-w-0">
-            <p className={`text-sm font-bold truncate ${s.urgent ? "text-destructive" : "text-foreground"}`}>{s.value}</p>
-            <p className="text-[11px] text-muted-foreground leading-tight">{s.label}</p>
+        <div key={s.label} className="bg-card flex flex-col items-center justify-center gap-0.5 px-1 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-3">
+          <s.icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 ${s.urgent ? "text-destructive" : "text-muted-foreground"}`} />
+          <div className="min-w-0 text-center sm:text-left">
+            <p className={`text-[11px] sm:text-sm font-bold truncate ${s.urgent ? "text-destructive" : "text-foreground"}`}>{s.value}</p>
+            <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-tight">{s.label}</p>
           </div>
         </div>
       ))}

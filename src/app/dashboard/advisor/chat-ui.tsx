@@ -4,6 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
 import { Send, Loader2, Sparkles, AlertCircle, Plus, X, Trash2, Ban } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -229,12 +230,18 @@ export function ChatUI() {
   const initialLoadDone = useRef(false);
   const lastSavedMessagesRef = useRef<string>("[]");
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const autoSentRef = useRef(false);
 
   useEffect(() => {
     async function loadChat() {
       try {
+        const paramSession = searchParams.get("session");
+        const paramQ = searchParams.get("q");
+
         const [latestSession, sessions] = await Promise.all([
-          getLatestChatSession(),
+          paramSession ? getChatSessionById(paramSession) : getLatestChatSession(),
           getAllChatSessions()
         ]);
         setSessionId(latestSession.id);
@@ -273,6 +280,16 @@ export function ChatUI() {
           setMessages(msgs as any);
         } else {
           lastSavedMessagesRef.current = "[]";
+          // Auto-send question from overview card if present
+          if (paramQ && !autoSentRef.current) {
+            autoSentRef.current = true;
+            // Clear params from URL without re-render
+            router.replace("/dashboard/advisor", { scroll: false });
+            setTimeout(() => {
+              // @ts-expect-error error
+              sendMessage({ role: "user", content: paramQ });
+            }, 100);
+          }
         }
       } catch (e) {
         console.error("Failed to load chat session:", e);
@@ -281,6 +298,7 @@ export function ChatUI() {
       }
     }
     loadChat();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setMessages]);
 
   const handleNewChat = async () => {
