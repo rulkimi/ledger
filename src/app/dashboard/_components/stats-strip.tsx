@@ -33,8 +33,8 @@ export default async function StatsStrip({ category }: { category?: string }) {
   }).length;
 
   const stats = [
-    { icon: Wallet,    label: "Monthly",     value: formatCurrency(monthly, currency)    },
-    { icon: TrendingUp, label: "6-Month",    value: formatCurrency(monthly * 6, currency) },
+    { icon: Wallet,    label: "Avg Monthly", value: formatCurrency(monthly, currency)    },
+    { icon: TrendingUp, label: "6-Mo Average",value: formatCurrency(monthly * 6, currency) },
     { icon: Calendar,  label: "Due (30d)",   value: formatCurrency(next30, currency)     },
     { icon: Bell,      label: "Urgent",      value: urgent > 0 ? `${urgent} bill${urgent > 1 ? "s" : ""}` : "None", urgent: urgent > 0 },
   ];

@@ -122,11 +122,16 @@ export function CalendarView({ months, maxTotal, grandTotal, currency }: Props) 
                   />
                 </div>
 
-                {/* Simplified: payment count */}
-                {!detailed && !isEmpty && (
-                  <p className="text-xs text-muted-foreground font-medium">
-                    {month.payments.length} payment{month.payments.length !== 1 ? "s" : ""}
-                  </p>
+                {/* Progress bar label info */}
+                {!isEmpty && (
+                  <div className="flex justify-between items-center text-[10px] text-muted-foreground/60 font-medium mt-1">
+                    {!detailed ? (
+                      <span>{month.payments.length} payment{month.payments.length !== 1 ? "s" : ""}</span>
+                    ) : (
+                      <span />
+                    )}
+                    <span>{barWidth.toFixed(0)}% of peak month</span>
+                  </div>
                 )}
               </div>
 

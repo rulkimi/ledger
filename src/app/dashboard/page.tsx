@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import StatsStrip from "./_components/stats-strip";
 import NextMonthPreview from "./_components/next-month-preview";
+import CentoThinksCard from "./_components/cento-thinks-card";
 import { AddSubscriptionDialog } from "./_components/add-subscription-dialog";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -32,11 +33,12 @@ export default async function DashboardPage() {
         <StatsStrip />
       </Suspense>
 
-      {/* Next month preview */}
-      <div className="flex-1 flex flex-col min-h-0">
+      {/* Next month preview & Cento thoughts split */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
         <Suspense fallback={<Skeleton className="flex-1 w-full rounded-xl" />}>
           <NextMonthPreview />
         </Suspense>
+        <CentoThinksCard />
       </div>
 
       {/* Quick links */}

@@ -27,8 +27,10 @@ export async function POST(req: Request) {
   const coreMessages = await convertToModelMessages(shimmedMessages);
 
   const result = streamText({
-    model: google("gemini-3.5-flash-lite"),
+    model: google("gemini-3.5-flash"),
     messages: coreMessages,
+    // @ts-expect-error - maxSteps is supported at runtime in this version of the Vercel AI SDK
+    maxSteps: 5,
     system: `You are Cento, a highly opinionated, sharp, and helpful financial subscription advisor (always ready to give your "2 cents").
 You help users manage their subscriptions, analyze their spending, and you are NOT afraid to roast them for wasting money on redundant subscriptions (like having Netflix AND Hulu AND Max if they barely watch TV, or 4 different AI tools).
 You MUST use your tools to fetch their actual subscription data before giving specific advice.

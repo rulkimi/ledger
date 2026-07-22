@@ -8,7 +8,7 @@ export const BillingFrequency = {
   ONE_TIME: "ONE_TIME" as const,
 };
 
-import { addDays, addMonths, addWeeks, addYears, differenceInDays } from "date-fns";
+import { addDays, addMonths, addWeeks, addYears, differenceInDays, startOfMonth } from "date-fns";
 
 /** How many times per year this frequency fires */
 export const FREQUENCY_MULTIPLIER: Record<BillingFrequency, number> = {
@@ -33,7 +33,7 @@ export const FREQUENCY_SHORT: Record<BillingFrequency, string> = {
   [BillingFrequency.MONTHLY]:     "/mo",
   [BillingFrequency.BI_ANNUALLY]: "/6mo",
   [BillingFrequency.YEARLY]:      "/yr",
-  [BillingFrequency.ONE_TIME]:    " once",
+  [BillingFrequency.ONE_TIME]:    "",
 };
 
 export type NormalizeView = "original" | "weekly" | "monthly" | "yearly";
@@ -143,15 +143,16 @@ export function buildMonthlyProjection(
   currentDate: Date = new Date()
 ): MonthlyBreakdown[] {
   const buckets = new Map<string, number>();
+  const startOfCurrentMonth = startOfMonth(currentDate);
 
   for (let i = 0; i < months; i++) {
-    const d = addMonths(currentDate, i);
+    const d = addMonths(startOfCurrentMonth, i);
     const key = d.toLocaleDateString("en-MY", { month: "short", year: "numeric" });
     buckets.set(key, 0);
   }
 
   for (const sub of subscriptions) {
-    const payments = getPaymentsInWindow(sub.startDate, sub.billingFrequency, sub.cost, months, currentDate);
+    const payments = getPaymentsInWindow(sub.startDate, sub.billingFrequency, sub.cost, months, startOfCurrentMonth);
     for (const payment of payments) {
       const key = payment.date.toLocaleDateString("en-MY", { month: "short", year: "numeric" });
       if (buckets.has(key)) {
@@ -196,19 +197,20 @@ export function buildYearlyCalendar(
   currentDate: Date = new Date()
 ): CalendarMonth[] {
   const months: CalendarMonth[] = [];
+  const startOfCurrentMonth = startOfMonth(currentDate);
 
   for (let i = 0; i < 12; i++) {
-    const d     = addMonths(currentDate, i);
+    const d     = addMonths(startOfCurrentMonth, i);
     const label = d.toLocaleDateString("en-MY", { month: "short", year: "numeric" });
     months.push({ label, total: 0, payments: [] });
   }
 
-  const endDate = addMonths(currentDate, 12);
+  const endDate = addMonths(startOfCurrentMonth, 12);
 
   for (const sub of subscriptions) {
     if (sub.billingFrequency === BillingFrequency.ONE_TIME) {
       const payDate = new Date(sub.startDate);
-      if (payDate >= currentDate && payDate <= endDate) {
+      if (payDate >= startOfCurrentMonth && payDate <= endDate) {
         const label = payDate.toLocaleDateString("en-MY", { month: "short", year: "numeric" });
         const month = months.find((m) => m.label === label);
         if (month) {
@@ -224,7 +226,7 @@ export function buildYearlyCalendar(
       continue;
     }
 
-    let next = calculateNextPaymentDate(sub.startDate, sub.billingFrequency, currentDate);
+    let next = calculateNextPaymentDate(sub.startDate, sub.billingFrequency, startOfCurrentMonth);
     while (next <= endDate) {
       const label = next.toLocaleDateString("en-MY", { month: "short", year: "numeric" });
       const month = months.find((m) => m.label === label);
