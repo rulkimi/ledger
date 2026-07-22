@@ -6,6 +6,7 @@ import { AddSubscriptionDialog } from "./_components/add-subscription-dialog";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Metadata } from "next";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "Overview | NetLedger",
@@ -13,12 +14,15 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
+  const session = await auth();
+  const firstName = session?.user?.name ? session.user.name.split(" ")[0] : "User";
+
   return (
     <div className="space-y-6 flex-1 flex flex-col pb-6 min-h-0">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold tracking-tight">Overview</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">Your financial snapshot at a glance.</p>
+          <h1 className="text-xl font-bold tracking-tight">Hi, {firstName}</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Here is your financial snapshot at a glance.</p>
         </div>
         <AddSubscriptionDialog />
       </div>

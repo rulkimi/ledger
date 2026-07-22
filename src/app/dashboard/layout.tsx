@@ -26,26 +26,23 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {/* Logo + nav */}
           <div className="flex items-center gap-5">
             <Link href="/" className="flex-shrink-0 flex items-center">
-              <Image src="/ledger-title.svg" alt="NetLedger" width={102} height={32} className="h-8 w-auto object-contain" />
+              {/* Mobile Logo */}
+              <Image src="/ledger.svg" alt="NetLedger" width={28} height={28} className="w-7 h-7 object-contain sm:hidden" />
+              {/* Desktop Logo */}
+              <Image src="/ledger-title.svg" alt="NetLedger" width={102} height={32} className="h-8 w-auto object-contain hidden sm:block" />
               <span className="sr-only">NetLedger</span>
             </Link>
             <DashboardNav />
           </div>
 
-          {/* User + theme toggle + sign out */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2.5 bg-muted/40 p-1 pl-3.5 rounded-full border border-border/50 backdrop-blur-md">
-              <span className="text-xs font-bold text-foreground truncate max-w-[120px]">
-                {session.user.name ?? "User"}
-              </span>
-              <div className="h-3.5 w-px bg-border/60" />
-              <ThemeToggle />
-            </div>
-
+          {/* Theme toggle + sign out grouped */}
+          <div className="flex items-center gap-1.5 bg-muted/40 p-1 pr-1.5 rounded-full border border-border/50 backdrop-blur-md">
+            <ThemeToggle />
+            <div className="h-3.5 w-px bg-border/60" />
             <form action={async () => { "use server"; await signOut({ redirectTo: "/" }); }}>
-              <Button size="sm" variant="ghost" type="submit" className="h-8 gap-1 text-muted-foreground hover:text-foreground px-2 rounded-full" aria-label="Sign out">
+              <Button size="sm" variant="ghost" type="submit" className="h-7 gap-1 text-muted-foreground hover:text-foreground px-2.5 rounded-full" aria-label="Sign out">
                 <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline text-xs font-medium">Sign Out</span>
+                <span className="hidden sm:inline text-[11px] font-bold">Sign Out</span>
               </Button>
             </form>
           </div>

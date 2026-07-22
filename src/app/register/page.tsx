@@ -66,8 +66,8 @@ export default async function RegisterPage() {
       <div className="flex items-center justify-center p-6 sm:p-10 lg:p-16">
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
-          <Link href="/" className="lg:hidden flex items-center brand-text">
-            <Image src="/ledger-title.svg" alt="NetLedger" width={102} height={32} className="h-8 w-auto object-contain" />
+          <Link href="/" className="lg:hidden flex items-center justify-center">
+            <Image src="/ledger.svg" alt="NetLedger" width={32} height={32} className="w-8 h-8 object-contain" />
             <span className="sr-only">NetLedger</span>
           </Link>
 

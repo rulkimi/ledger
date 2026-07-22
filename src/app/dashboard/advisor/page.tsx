@@ -1,13 +1,17 @@
 import { Metadata } from "next";
 import { Sparkles } from "lucide-react";
 import { ChatUI } from "./chat-ui";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "Cento | NetLedger",
   description: "Your personal financial AI advisor.",
 };
 
-export default function AdvisorPage() {
+export default async function AdvisorPage() {
+  const session = await auth();
+  const firstName = session?.user?.name ? session.user.name.split(" ")[0] : "User";
+
   return (
     <div className="flex-1 min-h-0 flex flex-col h-full overflow-hidden">
       <div className="flex-1 flex flex-col bg-card border border-border/50 rounded-xl overflow-hidden shadow-sm">
@@ -18,7 +22,7 @@ export default function AdvisorPage() {
           </div>
           <div>
             <h1 className="font-bold text-foreground">Cento</h1>
-            <p className="text-sm text-muted-foreground">Your opinionated financial assistant</p>
+            <p className="text-sm text-muted-foreground">Hi {firstName}, ask me anything about your bills or cash flow.</p>
           </div>
         </div>
         

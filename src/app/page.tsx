@@ -43,7 +43,10 @@ export default async function HomePage() {
       <nav className="sticky top-0 z-50 liquid-glass h-16">
         <div className="container mx-auto max-w-5xl h-full flex items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center">
-            <Image src="/ledger-title.svg" alt="NetLedger" width={102} height={32} className="h-8 w-auto object-contain" />
+            {/* Mobile Logo */}
+            <Image src="/ledger.svg" alt="NetLedger" width={28} height={28} className="w-7 h-7 object-contain sm:hidden" />
+            {/* Desktop Logo */}
+            <Image src="/ledger-title.svg" alt="NetLedger" width={102} height={32} className="h-8 w-auto object-contain hidden sm:block" />
             <h1 className="sr-only">NetLedger</h1>
           </Link>
           <div className="flex items-center gap-2">

@@ -40,7 +40,7 @@ export function DashboardNav() {
               />
             )}
             <Icon className="h-3.5 w-3.5 relative z-10" />
-            <span className={`relative z-10 ${isActive ? "" : "hidden sm:inline"}`}>{label}</span>
+            <span className="relative z-10 max-[400px]:hidden">{label}</span>
           </Link>
         );
       })}
