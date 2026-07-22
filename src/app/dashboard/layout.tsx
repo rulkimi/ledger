@@ -31,7 +31,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
           {/* User + theme toggle + sign out */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2.5 bg-muted/40 py-1 pl-3.5 pr-1.5 sm:pr-2 rounded-full border border-border/50 backdrop-blur-md">
+            <div className="flex items-center gap-2.5 bg-muted/40 p-1 pl-3.5 rounded-full border border-border/50 backdrop-blur-md">
               <span className="text-xs font-bold text-foreground truncate max-w-[120px]">
                 {session.user.name ?? "User"}
               </span>

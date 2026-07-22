@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, List, CalendarDays, Sparkles } from "lucide-react";
+import { motion } from "motion/react";
 
 const NAV_ITEMS = [
   { href: "/dashboard",          label: "Overview",  Icon: LayoutDashboard },
@@ -25,14 +26,21 @@ export function DashboardNav() {
           <Link
             key={href}
             href={href}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+            className={`relative flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
               isActive
-                ? "bg-background text-primary font-bold"
-                : "text-muted-foreground hover:text-foreground hover:bg-background/40"
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             }`}
           >
-            <Icon className="h-3.5 w-3.5" />
-            {label}
+            {isActive && (
+              <motion.div
+                layoutId="nav-active-bg"
+                className="absolute inset-0 bg-primary/10 rounded-full"
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
+            <Icon className="h-3.5 w-3.5 relative z-10" />
+            <span className={`relative z-10 ${isActive ? "" : "hidden sm:inline"}`}>{label}</span>
           </Link>
         );
       })}

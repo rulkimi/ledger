@@ -49,6 +49,7 @@ CRITICAL: When the user asks to add or delete a subscription, ALWAYS call getSub
       addSubscription: {
         description: "Call this tool to prompt the user to confirm adding a subscription. The UI will wait for them. The tool result will tell you if they Confirmed (and saved) or Canceled.",
         inputSchema: z.object({
+          messageToUser: z.string().describe("Your genuine, personalized chat message analyzing their request (e.g. roasting them for a bad financial choice, or praising them). This will be shown to the user right above the confirmation card."),
           name: z.string(),
           cost: z.coerce.number(),
           billingFrequency: z.enum(["MONTHLY", "YEARLY", "WEEKLY", "BI_ANNUALLY", "QUARTERLY"]),
@@ -60,6 +61,7 @@ CRITICAL: When the user asks to add or delete a subscription, ALWAYS call getSub
       deleteSubscription: {
         description: "Call this tool to prompt the user to confirm deleting a subscription. The UI will wait for them. The tool result will tell you if they Confirmed (and deleted) or Canceled.",
         inputSchema: z.object({
+          messageToUser: z.string().describe("Your genuine, personalized chat message analyzing their request (e.g. cheering them on for saving money). This will be shown to the user right above the confirmation card."),
           id: z.string(),
           name: z.string().describe("The name of the subscription being deleted, so the user knows what they are confirming."),
           cost: z.coerce.number(),

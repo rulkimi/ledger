@@ -16,6 +16,7 @@ model User {
   password      String?
   currency      String         @default("MYR")
   subscriptions Subscription[]
+  chatSessions  ChatSession[]
 }
 
 enum BillingFrequency {
@@ -44,4 +45,17 @@ model Subscription {
 
   @@index([userId])
   @@index([userId, isActive])
+}
+
+model ChatSession {
+  id        String   @id @default(cuid())
+  title     String   @default("New Chat")
+  userId    String
+  messages  Json     @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

@@ -2,14 +2,18 @@
 
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
-import { Send, Loader2, Sparkles, AlertCircle } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Send, Loader2, Sparkles, AlertCircle, Plus, X, Trash2 } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { createSubscription, deleteSubscription } from "@/actions/subscription";
+import { getLatestChatSession, saveChatSession, getAllChatSessions, createNewChatSession, getChatSessionById, deleteChatSession } from "@/actions/chat";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { format } from "date-fns";
 
 function EditableAddSubscriptionCard({ 
   toolCallId, toolName, initialInput, handleConfirm, handleCancel, isCompleted, resultText 
@@ -115,16 +119,154 @@ function EditableAddSubscriptionCard({
 
 
 const SUGGESTIONS = [
-  "Roast my financial choices 🌶️",
-  "Where can I cut costs? ✂️",
-  "Check all my subscriptions 📋",
+  {
+    title: "Roast my spending",
+    description: "Get a brutal reality check on your subscriptions.",
+    icon: "🌶️",
+    prompt: "Roast my financial choices and tell me if my subscriptions are reasonable.",
+  },
+  {
+    title: "Find wasted money",
+    description: "Identify unused or redundant subscriptions.",
+    icon: "🔍",
+    prompt: "Look through my subscriptions and suggest which ones I should probably cancel to save money.",
+  },
+  {
+    title: "Add new expense",
+    description: "Track a new recurring bill.",
+    icon: "💸",
+    prompt: "I want to add a new subscription.",
+  },
+  {
+    title: "Cancel a sub",
+    description: "Remove an expense from your ledger.",
+    icon: "✂️",
+    prompt: "I want to cancel one of my subscriptions.",
+  }
 ];
 
 export function ChatUI() {
   const [input, setInput] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const { messages, sendMessage, status, error, setMessages } = useChat({
     // Optional config here
   });
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [allSessions, setAllSessions] = useState<{id: string, title: string, createdAt: Date, updatedAt: Date}[]>([]);
+  const [chatToDelete, setChatToDelete] = useState<string | null>(null);
+  const initialLoadDone = useRef(false);
+  const lastSavedMessagesRef = useRef<string>("[]");
+
+  useEffect(() => {
+    async function loadChat() {
+      try {
+        const [latestSession, sessions] = await Promise.all([
+          getLatestChatSession(),
+          getAllChatSessions()
+        ]);
+        setSessionId(latestSession.id);
+        setAllSessions(sessions);
+        if (latestSession.messages && Array.isArray(latestSession.messages) && latestSession.messages.length > 0) {
+          lastSavedMessagesRef.current = JSON.stringify(latestSession.messages);
+          setMessages(latestSession.messages as any);
+        } else {
+          lastSavedMessagesRef.current = "[]";
+        }
+      } catch (e) {
+        console.error("Failed to load chat session:", e);
+      } finally {
+        initialLoadDone.current = true;
+      }
+    }
+    loadChat();
+  }, [setMessages]);
+
+  const handleNewChat = async () => {
+    setIsSaving(true);
+    try {
+      const newSession = await createNewChatSession();
+      setSessionId(newSession.id);
+      setAllSessions(prev => {
+        // Enforce max 5 in the UI by slicing the oldest if needed
+        const next = [...prev, newSession];
+        if (next.length > 5) return next.slice(next.length - 5);
+        return next;
+      });
+      lastSavedMessagesRef.current = "[]";
+      setMessages([]);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSwitchChat = async (id: string | null) => {
+    if (!id) return;
+    setIsSaving(true);
+    try {
+      const chat = await getChatSessionById(id);
+      setSessionId(chat.id);
+      const msgs = (chat.messages as any) || [];
+      lastSavedMessagesRef.current = JSON.stringify(msgs);
+      setMessages(msgs);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteChatConfirm = async () => {
+    if (!chatToDelete) return;
+    const id = chatToDelete;
+    setChatToDelete(null);
+    setIsSaving(true);
+    try {
+      await deleteChatSession(id);
+      const remaining = allSessions.filter(s => s.id !== id);
+      setAllSessions(remaining);
+      if (sessionId === id) {
+        if (remaining.length > 0) {
+          await handleSwitchChat(remaining[0].id);
+        } else {
+          handleNewChat();
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!initialLoadDone.current || !sessionId) return;
+    
+    const messagesStr = JSON.stringify(messages);
+    if (messagesStr === lastSavedMessagesRef.current) return;
+    
+    setIsSaving(true);
+    
+    // Save chat session whenever messages change
+    const timer = setTimeout(() => {
+      saveChatSession(sessionId, messages)
+        .then(() => {
+          setIsSaving(false);
+          lastSavedMessagesRef.current = JSON.stringify(messages);
+          // if first message sets title, reload sessions to update tab
+          if (messages.length > 0 && allSessions.find(s => s.id === sessionId)?.title === "New Chat") {
+            getAllChatSessions().then(setAllSessions);
+          }
+        })
+        .catch(e => {
+          console.error(e);
+          setIsSaving(false);
+        });
+    }, 1000); // debounce save
+    
+    return () => clearTimeout(timer);
+  }, [messages, sessionId, allSessions]);
 
   const injectToolResult = (toolCallId: string, output: any) => {
     const newMessages = [...messages];
@@ -212,7 +354,60 @@ export function ChatUI() {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-0">
+    <div className="flex-1 flex flex-col min-h-0 bg-background/50">
+      {/* Browser-like Tabs Header */}
+      <div className="flex items-end gap-1 px-2 pt-2 border-b border-border/50 bg-muted/30 overflow-x-auto hide-scrollbar">
+        {allSessions.map(session => (
+          <div
+            key={session.id}
+            onClick={() => handleSwitchChat(session.id)}
+            className={`
+              group flex items-center justify-between gap-2 px-3 py-2 min-w-[120px] max-w-[200px] text-xs font-medium rounded-t-lg transition-colors border border-b-0 cursor-pointer
+              ${sessionId === session.id 
+                ? 'bg-background border-border/50 text-foreground z-10 -mb-[1px]' 
+                : 'bg-muted/50 border-transparent text-muted-foreground hover:bg-muted/80'
+              }
+            `}
+          >
+            <span className="truncate">{session.title}</span>
+            <button
+              onClick={(e) => { e.stopPropagation(); setChatToDelete(session.id); }}
+              className="p-[2px] rounded hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+        ))}
+        {allSessions.length < 5 && (
+          <button 
+            onClick={handleNewChat}
+            className="flex items-center justify-center px-3 py-2 ml-1 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-t-lg transition-colors border border-transparent hover:border-border/50 border-b-0"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Toolbar / Autosave Status */}
+      <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-border/50 bg-background">
+        <div className="flex items-center gap-2 max-w-[70%]">
+          <div className="text-sm font-semibold text-foreground truncate">
+            {allSessions.find(s => s.id === sessionId)?.title || "Loading..."}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium whitespace-nowrap">
+          <span className="hidden sm:inline-block px-1.5 py-0.5 bg-muted rounded-md text-[10px] uppercase tracking-wider font-semibold">
+            {allSessions.length}/5 Chats
+          </span>
+          <div className="w-[1px] h-3 bg-border/50 mx-1 hidden sm:block" />
+          {isSaving ? (
+            <><Loader2 className="h-3 w-3 animate-spin" /> Saving...</>
+          ) : (
+            <><Sparkles className="h-3 w-3 text-emerald-500" /> Autosaved</>
+          )}
+        </div>
+      </div>
+
       {/* Error Output */}
       {error && (
         <div className="bg-destructive/10 text-destructive p-4 text-xs font-mono whitespace-pre-wrap">
@@ -233,19 +428,22 @@ export function ChatUI() {
                 I can analyze your spending, roast your subscriptions, or help you manage your bills directly.
               </p>
             </div>
-            <div className="flex flex-col gap-2 w-full">
-              {SUGGESTIONS.map((suggestion) => (
-                <Button
-                  key={suggestion}
-                  variant="outline"
-                  className="w-full justify-start text-left bg-muted/20 hover:bg-muted/50 border-border/50"
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-2xl mt-4">
+              {SUGGESTIONS.map((suggestion, i) => (
+                <button
+                  key={i}
+                  className="flex flex-col items-start p-4 bg-muted/20 hover:bg-muted/60 border border-border/50 rounded-2xl transition-all text-left hover:border-primary/30 group shadow-sm hover:shadow-md"
                   onClick={() => {
                     // @ts-expect-error - AI SDK v7 expects UIMessage without content, but streamText expects content
-                    sendMessage({ role: "user", content: suggestion });
+                    sendMessage({ role: "user", content: suggestion.prompt });
                   }}
                 >
-                  {suggestion}
-                </Button>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-2xl group-hover:scale-110 transition-transform origin-bottom-left">{suggestion.icon}</span>
+                    <span className="font-semibold text-sm text-foreground">{suggestion.title}</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground leading-relaxed">{suggestion.description}</span>
+                </button>
               ))}
             </div>
           </div>
@@ -311,65 +509,84 @@ export function ChatUI() {
 
                     const isAwaitingExecution = state === "call" || state === "input-available" || state === "requires-action";
 
+                    const renderToolMessage = () => {
+                      if (p.input?.messageToUser) {
+                        return (
+                          <div className="max-w-[85%] rounded-2xl px-4 py-3 shadow-md bg-muted/40 text-foreground rounded-tl-sm border border-border/50 self-start mb-2">
+                            <div className="prose prose-sm dark:prose-invert max-w-none break-words font-sans">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {p.input.messageToUser}
+                              </ReactMarkdown>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    };
+
                     // If it's a client-side tool
                     if (toolName === "addSubscription" || toolName === "deleteSubscription") {
                       if (toolName === "addSubscription") {
                         return (
-                          <EditableAddSubscriptionCard
-                            key={toolCallId}
-                            toolCallId={toolCallId}
-                            toolName={toolName}
-                            initialInput={p.input}
-                            handleConfirm={handleConfirmAdd}
-                            handleCancel={(id) => injectToolResult(id, "User canceled the operation.")}
-                            isCompleted={!isAwaitingExecution}
-                            resultText={typeof p.output === 'string' ? p.output : undefined}
-                          />
+                          <React.Fragment key={toolCallId}>
+                            {renderToolMessage()}
+                            <EditableAddSubscriptionCard
+                              toolCallId={toolCallId}
+                              toolName={toolName}
+                              initialInput={p.input}
+                              handleConfirm={handleConfirmAdd}
+                              handleCancel={(id) => injectToolResult(id, "User canceled the operation.")}
+                              isCompleted={!isAwaitingExecution}
+                              resultText={typeof p.output === 'string' ? p.output : undefined}
+                            />
+                          </React.Fragment>
                         );
                       }
                       if (toolName === "deleteSubscription") {
                         if (!isAwaitingExecution) {
                           return (
-                            <div key={toolCallId} className="mt-2 p-4 rounded-xl border shadow-sm text-sm w-full max-w-sm bg-muted/50 border-border/30 opacity-75">
-                              <p className="font-semibold mb-3 flex items-center gap-2 text-muted-foreground">
-                                <AlertCircle className="w-4 h-4 text-muted-foreground" />
-                                Deleted Subscription
-                              </p>
-                              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-muted-foreground mb-3 bg-background/30 p-3 rounded-lg border border-border/30 text-xs">
-                                <div className="col-span-2">Name: <span className="text-foreground font-medium">{p.input?.name || 'Unknown'}</span></div>
-                                <div>Cost: <span className="text-foreground font-medium">{p.input?.cost}</span></div>
-                                <div>Freq: <span className="text-foreground font-medium">{p.input?.billingFrequency}</span></div>
-                                {p.input?.startDate && (
-                                  <div className="col-span-2">Since: <span className="text-foreground font-medium">{p.input.startDate.split('T')[0]}</span></div>
-                                )}
+                            <React.Fragment key={toolCallId}>
+                              {renderToolMessage()}
+                              <div className="mt-2 p-4 rounded-xl border shadow-sm text-sm w-full max-w-sm bg-muted/50 border-border/30 opacity-75">
+                                <p className="font-semibold mb-3 flex items-center gap-2 text-muted-foreground">
+                                  <AlertCircle className="w-4 h-4 text-muted-foreground" />
+                                  Deleted Subscription
+                                </p>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-muted-foreground mb-3 bg-background/30 p-3 rounded-lg border border-border/30 text-xs">
+                                  <div className="col-span-2">Name: <span className="text-foreground font-medium">{p.input?.name || 'Unknown'}</span></div>
+                                  <div>Cost: <span className="text-foreground font-medium">{p.input?.cost}</span></div>
+                                  <div>Freq: <span className="text-foreground font-medium">{p.input?.billingFrequency}</span></div>
+                                  {p.input?.startDate && (
+                                    <div className="col-span-2">Since: <span className="text-foreground font-medium">{p.input.startDate.split('T')[0]}</span></div>
+                                  )}
+                                </div>
+                                <div className="mt-2 p-2 bg-muted rounded text-xs text-muted-foreground font-medium text-center">
+                                  {typeof p.output === 'string' ? p.output : 'Completed'}
+                                </div>
                               </div>
-                              <div className="mt-2 p-2 bg-muted rounded text-xs text-muted-foreground font-medium text-center">
-                                {typeof p.output === 'string' ? p.output : 'Completed'}
-                              </div>
-                            </div>
+                            </React.Fragment>
                           );
                         }
 
                         return (
-                          <div key={toolCallId} className="mt-2 p-5 bg-background rounded-xl border border-destructive/30 shadow-md text-sm w-full max-w-[425px]">
-                            <p className="font-semibold mb-3 text-destructive flex items-center gap-2">
-                              <AlertCircle className="w-5 h-5" /> 
-                              Confirm Deletion
-                            </p>
-                            <p className="text-muted-foreground mb-4">Are you sure you want to cancel your <span className="font-semibold text-foreground">{p.input?.name || "this subscription"}</span> subscription?</p>
-                            
-                            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-muted-foreground my-4 bg-background/50 p-3 rounded-lg border border-border/50">
-                              <div>Cost: <span className="text-foreground font-medium">{p.input?.cost}</span></div>
-                              <div>Freq: <span className="text-foreground font-medium">{p.input?.billingFrequency}</span></div>
-                              {p.input?.startDate && (
-                                <div className="col-span-2">Since: <span className="text-foreground font-medium">{p.input.startDate.split('T')[0]}</span></div>
-                              )}
+                          <React.Fragment key={toolCallId}>
+                            {renderToolMessage()}
+                            <div className="mt-2 p-4 rounded-xl border shadow-md bg-card text-sm w-full max-w-sm">
+                              <p className="font-semibold mb-3 flex items-center gap-2">
+                                <AlertCircle className="w-4 h-4 text-destructive" />
+                                Delete Subscription?
+                              </p>
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-muted-foreground mb-4 bg-muted/30 p-3 rounded-lg border border-border/50 text-xs">
+                                <div className="col-span-2">Name: <span className="text-foreground font-medium">{p.input?.name || 'Unknown'}</span></div>
+                                <div>Cost: <span className="text-foreground font-medium">{p.input?.cost}</span></div>
+                                <div>Freq: <span className="text-foreground font-medium">{p.input?.billingFrequency}</span></div>
+                              </div>
+                              <div className="flex gap-2 justify-end mt-4">
+                                <Button size="sm" variant="ghost" onClick={() => injectToolResult(toolCallId, "User canceled the operation.")}>Cancel</Button>
+                                <Button size="sm" variant="destructive" onClick={() => handleConfirmDelete(toolCallId, toolName, p.input)}>Confirm Delete</Button>
+                              </div>
                             </div>
-                            <div className="flex justify-end gap-2">
-                              <Button size="sm" variant="ghost" onClick={() => injectToolResult(toolCallId, "User canceled the operation.")}>Cancel</Button>
-                              <Button size="sm" variant="destructive" onClick={() => handleConfirmDelete(toolCallId, toolName, p.input)}>Confirm Delete</Button>
-                            </div>
-                          </div>
+                          </React.Fragment>
                         );
                       }
                     }
@@ -403,7 +620,7 @@ export function ChatUI() {
           })
         )}
         
-        {isLoading && messages.length > 0 && messages[messages.length - 1].role === "user" && (
+        {isLoading && (
           <div className="flex items-start">
             <div className="bg-muted/40 px-4 py-3 rounded-2xl rounded-tl-sm border border-border/50 flex items-center gap-2 text-sm text-muted-foreground shadow-sm">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -435,6 +652,24 @@ export function ChatUI() {
           </Button>
         </form>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!chatToDelete} onOpenChange={(open) => !open && setChatToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this conversation and remove it from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteChatConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
