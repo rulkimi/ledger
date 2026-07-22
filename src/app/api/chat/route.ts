@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   const coreMessages = await convertToModelMessages(shimmedMessages);
 
   const result = streamText({
-    model: google("gemini-3.5-flash"),
+    model: google("gemini-3.5-flash-lite"),
     messages: coreMessages,
     // @ts-expect-error - maxSteps is supported at runtime in this version of the Vercel AI SDK
     maxSteps: 5,
