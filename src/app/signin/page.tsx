@@ -42,9 +42,9 @@ export default async function SignInPage(props: { searchParams: Promise<{ regist
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-white/8 rounded-full blur-3xl" />
 
-        <Link href="/" className="relative font-extrabold text-2xl tracking-tight text-white flex items-center gap-2.5">
-          <Image src="/ledger.png" alt="NetLedger Logo" width={32} height={32} className="w-8 h-8 invert-0 dark:invert" />
-          <span>NetLedger</span>
+        <Link href="/" className="relative flex items-center">
+          <Image src="/ledger-title.svg" alt="NetLedger" width={115} height={36} className="h-9 w-auto object-contain" />
+          <span className="sr-only">NetLedger</span>
         </Link>
 
         <div className="relative space-y-8">
@@ -77,9 +77,9 @@ export default async function SignInPage(props: { searchParams: Promise<{ regist
       <div className="flex items-center justify-center p-6 sm:p-10 lg:p-16">
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
-          <Link href="/" className="lg:hidden flex items-center gap-2 font-extrabold text-2xl tracking-tight brand-text">
-            <Image src="/ledger.png" alt="NetLedger Logo" width={28} height={28} className="w-7 h-7" />
-            <span>NetLedger</span>
+          <Link href="/" className="lg:hidden flex items-center brand-text">
+            <Image src="/ledger-title.svg" alt="NetLedger" width={102} height={32} className="h-8 w-auto object-contain" />
+            <span className="sr-only">NetLedger</span>
           </Link>
 
           <div>
