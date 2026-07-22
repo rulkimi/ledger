@@ -560,7 +560,11 @@ export function ChatUI() {
             <span className="truncate">{session.title}</span>
             <button
               onClick={(e) => { e.stopPropagation(); setChatToDelete(session.id); }}
-              className="p-[2px] rounded hover:bg-destructive/10 hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+              className={`p-[2px] rounded hover:bg-destructive/10 hover:text-destructive transition-opacity ${
+                sessionId === session.id 
+                  ? 'opacity-100' 
+                  : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
+              }`}
             >
               <X className="w-3 h-3" />
             </button>

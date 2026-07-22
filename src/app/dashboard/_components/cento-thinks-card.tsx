@@ -70,7 +70,7 @@ export default function CentoThinksCard() {
     <div className="h-full flex flex-col border border-border/60 rounded-xl overflow-hidden bg-card min-h-0">
       <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-border/40">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-emerald-500 animate-pulse" />
+          <Sparkles className="h-4 w-4 text-primary" />
           <p className="text-xs font-semibold">Cento&apos;s Verdict</p>
         </div>
       </div>
