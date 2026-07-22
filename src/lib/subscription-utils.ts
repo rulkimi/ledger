@@ -97,8 +97,8 @@ export function calculateNextPaymentDate(
   if (frequency === BillingFrequency.ONE_TIME) {
     return next;
   }
-  if (next > currentDate) return next;
-  while (next <= currentDate) {
+  if (next >= currentDate) return next;
+  while (next < currentDate) {
     next = advanceByFrequency(next, frequency);
   }
   return next;
