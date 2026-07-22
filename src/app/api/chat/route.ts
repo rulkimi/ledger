@@ -54,6 +54,7 @@ CRITICAL: When the user asks to add or delete a subscription, ALWAYS call getSub
           billingFrequency: z.enum(["MONTHLY", "YEARLY", "WEEKLY", "BI_ANNUALLY", "QUARTERLY"]),
           category: z.string().optional(),
           startDate: z.string().describe("ISO date string for when it started"),
+          endDate: z.string().optional().describe("Optional ISO date string for when it ends (e.g. for installments or fixed-term subscriptions)"),
         }),
       },
       deleteSubscription: {

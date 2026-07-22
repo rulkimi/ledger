@@ -11,6 +11,7 @@ const subscriptionSchema = z.object({
   cost: z.coerce.number().positive("Cost must be greater than 0"),
   billingFrequency: z.nativeEnum(BillingFrequency),
   startDate: z.coerce.date(),
+  endDate: z.coerce.date().optional().nullable(),
   category: z.string().optional(),
   notes: z.string().optional(),
 });

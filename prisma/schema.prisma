@@ -33,6 +33,7 @@ model Subscription {
   currency         String           @default("MYR")
   billingFrequency BillingFrequency
   startDate        DateTime
+  endDate          DateTime?
   category         String?
   notes            String?
   isActive         Boolean          @default(true)

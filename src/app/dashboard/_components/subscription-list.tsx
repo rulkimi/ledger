@@ -120,6 +120,7 @@ export default async function SubscriptionList({
                   <p className="text-[11px] text-muted-foreground/70 truncate">
                     {sub.category && <span>{sub.category} · </span>}
                     <span>{FREQUENCY_LABEL[sub.billingFrequency]}</span>
+                    {sub.endDate && <span className="text-destructive/80 ml-1">· Ends {format(sub.endDate, "MMM yyyy")}</span>}
                   </p>
                 </div>
 

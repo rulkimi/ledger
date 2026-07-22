@@ -164,6 +164,11 @@ export default async function UpcomingPayments({
                         <Badge variant="outline" className="text-[11px] font-medium text-muted-foreground border-border/50 rounded-md">
                           {FREQUENCY_LABEL[sub.billingFrequency]}
                         </Badge>
+                        {sub.endDate && (
+                          <div className="mt-1 text-[10px] text-destructive/80 font-medium">
+                            Ends {format(sub.endDate, "MMM yyyy")}
+                          </div>
+                        )}
                       </TableCell>
 
                       {/* True monthly cost */}

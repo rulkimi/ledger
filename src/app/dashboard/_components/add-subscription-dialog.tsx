@@ -47,6 +47,7 @@ export function AddSubscriptionDialog() {
         cost:             Number(formData.get("cost")),
         billingFrequency: frequency as ServerBillingFrequency,
         startDate:        new Date(formData.get("startDate") as string),
+        endDate:          formData.get("endDate") ? new Date(formData.get("endDate") as string) : undefined,
         category:         category !== "none" ? category : undefined,
         notes:            (formData.get("notes") as string) || undefined,
       });
@@ -95,7 +96,7 @@ export function AddSubscriptionDialog() {
             <div className="space-y-1.5">
               <Label htmlFor="add-frequency" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Frequency</Label>
               <Select value={frequency} onValueChange={(v) => setFrequency((v ?? "MONTHLY") as BillingFrequency)}>
-                <SelectTrigger id="add-frequency" className="bg-muted/30">
+                <SelectTrigger id="add-frequency" className="bg-muted/30 w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -108,9 +109,15 @@ export function AddSubscriptionDialog() {
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="add-startDate" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">First Payment Date</Label>
-            <Input id="add-startDate" name="startDate" type="date" required className="bg-muted/30" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="add-startDate" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Start Date</Label>
+              <Input id="add-startDate" name="startDate" type="date" required className="bg-muted/30" />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="add-endDate" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">End Date (Optional)</Label>
+              <Input id="add-endDate" name="endDate" type="date" className="bg-muted/30" />
+            </div>
           </div>
 
           <div className="space-y-1.5">

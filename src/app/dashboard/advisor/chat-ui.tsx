@@ -36,7 +36,10 @@ function EditableAddSubscriptionCard({
           <div>Cost: <span className="text-foreground font-medium">{formData.cost}</span></div>
           <div>Freq: <span className="text-foreground font-medium">{formData.billingFrequency}</span></div>
           {formData.startDate && (
-            <div className="col-span-2">Since: <span className="text-foreground font-medium">{formData.startDate.split('T')[0]}</span></div>
+            <div className="col-span-1">Since: <span className="text-foreground font-medium">{formData.startDate.split('T')[0]}</span></div>
+          )}
+          {formData.endDate && (
+            <div className="col-span-1">Until: <span className="text-foreground font-medium">{formData.endDate.split('T')[0]}</span></div>
           )}
         </div>
         <div className="mt-2 p-2 bg-muted rounded text-xs text-muted-foreground font-medium text-center">
@@ -81,14 +84,25 @@ function EditableAddSubscriptionCard({
             />
           </div>
         </div>
-        <div>
-          <Label className="text-xs text-muted-foreground">Start Date</Label>
-          <Input 
-            type="date"
-            className="h-8 mt-1" 
-            value={formData.startDate ? formData.startDate.split('T')[0] : ""} 
-            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} 
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-xs text-muted-foreground">Start Date</Label>
+            <Input 
+              type="date"
+              className="h-8 mt-1" 
+              value={formData.startDate ? formData.startDate.split('T')[0] : ""} 
+              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} 
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">End Date (Opt)</Label>
+            <Input 
+              type="date"
+              className="h-8 mt-1" 
+              value={formData.endDate ? formData.endDate.split('T')[0] : ""} 
+              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} 
+            />
+          </div>
         </div>
       </div>
       <div className="flex gap-2 justify-end">
@@ -137,6 +151,7 @@ export function ChatUI() {
         cost: Number(input.cost),
         billingFrequency: input.billingFrequency,
         startDate: new Date(input.startDate),
+        endDate: input.endDate ? new Date(input.endDate) : null,
         category: input.category || 'Uncategorized',
       });
       injectToolResult(toolCallId, `Successfully added ${input.name} (RM${input.cost} ${input.billingFrequency})!`);

@@ -17,7 +17,7 @@ export default function AdvisorPage() {
           </div>
           <div>
             <h1 className="font-bold text-foreground">Ledger AI</h1>
-            <p className="text-xs text-muted-foreground">Powered by Gemini 2.5</p>
+            <p className="text-xs text-muted-foreground">Powered by Gemini 3.5 Flash</p>
           </div>
         </div>
         

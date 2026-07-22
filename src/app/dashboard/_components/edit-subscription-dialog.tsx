@@ -31,6 +31,7 @@ interface Props {
     cost: number;
     billingFrequency: BillingFrequency;
     startDate: Date;
+    endDate?: Date | null;
     category?: string | null;
     notes?: string | null;
   };
@@ -52,6 +53,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
         cost:             Number(formData.get("cost")),
         billingFrequency: frequency as ServerBillingFrequency,
         startDate:        new Date(formData.get("startDate") as string),
+        endDate:          formData.get("endDate") ? new Date(formData.get("endDate") as string) : undefined,
         category:         category !== "none" ? category : undefined,
         notes:            (formData.get("notes") as string) || undefined,
       });
@@ -115,7 +117,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
             <div className="space-y-1.5">
               <Label htmlFor="edit-frequency" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Frequency</Label>
               <Select value={frequency} onValueChange={(v) => setFrequency((v ?? "MONTHLY") as BillingFrequency)}>
-                <SelectTrigger id="edit-frequency" className="bg-muted/30 border-border/60">
+                <SelectTrigger id="edit-frequency" className="bg-muted/30 border-border/60 w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -128,16 +130,28 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="edit-startDate" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">First Payment Date</Label>
-            <Input
-              id="edit-startDate"
-              name="startDate"
-              type="date"
-              required
-              defaultValue={format(new Date(defaultValues.startDate), "yyyy-MM-dd")}
-              className="bg-muted/30 border-border/60"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-startDate" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Start Date</Label>
+              <Input
+                id="edit-startDate"
+                name="startDate"
+                type="date"
+                required
+                defaultValue={format(new Date(defaultValues.startDate), "yyyy-MM-dd")}
+                className="bg-muted/30 border-border/60"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-endDate" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">End Date (Opt)</Label>
+              <Input
+                id="edit-endDate"
+                name="endDate"
+                type="date"
+                defaultValue={defaultValues.endDate ? format(new Date(defaultValues.endDate), "yyyy-MM-dd") : ""}
+                className="bg-muted/30 border-border/60"
+              />
+            </div>
           </div>
 
           <div className="space-y-1.5">
