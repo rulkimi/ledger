@@ -10,6 +10,7 @@ import { updateSubscription } from "@/actions/subscription";
 import { Pencil, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import type { BillingFrequency as ServerBillingFrequency } from "@/generated/prisma/client";
+import { FREQUENCY_LABEL } from "@/lib/subscription-utils";
 
 const CATEGORIES = [
   "Entertainment", "Health", "Technology", "Auto", "Shopping",
@@ -21,6 +22,7 @@ const BILLING_FREQUENCIES = {
   MONTHLY:     "MONTHLY",
   BI_ANNUALLY: "BI_ANNUALLY",
   YEARLY:      "YEARLY",
+  ONE_TIME:    "ONE_TIME",
 } as const;
 type BillingFrequency = (typeof BILLING_FREQUENCIES)[keyof typeof BILLING_FREQUENCIES];
 
@@ -53,7 +55,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
         cost:             Number(formData.get("cost")),
         billingFrequency: frequency as ServerBillingFrequency,
         startDate:        new Date(formData.get("startDate") as string),
-        endDate:          formData.get("endDate") ? new Date(formData.get("endDate") as string) : undefined,
+        endDate:          frequency === "ONE_TIME" ? undefined : (formData.get("endDate") ? new Date(formData.get("endDate") as string) : undefined),
         category:         category !== "none" ? category : undefined,
         notes:            (formData.get("notes") as string) || undefined,
       });
@@ -118,21 +120,26 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
               <Label htmlFor="edit-frequency" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Frequency</Label>
               <Select value={frequency} onValueChange={(v) => setFrequency((v ?? "MONTHLY") as BillingFrequency)}>
                 <SelectTrigger id="edit-frequency" className="bg-muted/30 border-border/60 w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {FREQUENCY_LABEL[frequency]}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="WEEKLY">Weekly</SelectItem>
                   <SelectItem value="MONTHLY">Monthly</SelectItem>
                   <SelectItem value="BI_ANNUALLY">Bi-Annually</SelectItem>
                   <SelectItem value="YEARLY">Yearly</SelectItem>
+                  <SelectItem value="ONE_TIME">One-Time</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className={frequency === "ONE_TIME" ? "grid grid-cols-1" : "grid grid-cols-2 gap-4"}>
             <div className="space-y-1.5">
-              <Label htmlFor="edit-startDate" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Start Date</Label>
+              <Label htmlFor="edit-startDate" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                {frequency === "ONE_TIME" ? "Payment Date (Planned)" : "Start Date"}
+              </Label>
               <Input
                 id="edit-startDate"
                 name="startDate"
@@ -142,16 +149,18 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
                 className="bg-muted/30 border-border/60"
               />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="edit-endDate" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">End Date (Opt)</Label>
-              <Input
-                id="edit-endDate"
-                name="endDate"
-                type="date"
-                defaultValue={defaultValues.endDate ? format(new Date(defaultValues.endDate), "yyyy-MM-dd") : ""}
-                className="bg-muted/30 border-border/60"
-              />
-            </div>
+            {frequency !== "ONE_TIME" && (
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-endDate" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">End Date (Opt)</Label>
+                <Input
+                  id="edit-endDate"
+                  name="endDate"
+                  type="date"
+                  defaultValue={defaultValues.endDate ? format(new Date(defaultValues.endDate), "yyyy-MM-dd") : ""}
+                  className="bg-muted/30 border-border/60"
+                />
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5">

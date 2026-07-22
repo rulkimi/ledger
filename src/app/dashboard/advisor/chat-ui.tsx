@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import type { UIMessage } from "ai";
-import { Send, Loader2, Sparkles, AlertCircle, Plus, X, Trash2 } from "lucide-react";
+import { Send, Loader2, Sparkles, AlertCircle, Plus, X, Trash2, Ban } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,12 +15,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 
+const FREQUENCY_LABELS: Record<string, string> = {
+  WEEKLY: "Weekly",
+  MONTHLY: "Monthly",
+  BI_ANNUALLY: "Bi-Annually",
+  YEARLY: "Yearly",
+  ONE_TIME: "One-Time",
+};
+
 function EditableAddSubscriptionCard({ 
   toolCallId, toolName, initialInput, handleConfirm, handleCancel, isCompleted, resultText 
 }: { 
   toolCallId: string, toolName: string, initialInput: any, handleConfirm: (id: string, name: string, input: any) => void, handleCancel: (id: string) => void, isCompleted: boolean, resultText?: string 
 }) {
   const [formData, setFormData] = useState(initialInput || {});
+  const [processingState, setProcessingState] = useState<"idle" | "confirming" | "canceling">("idle");
 
   useEffect(() => {
     if (!isCompleted && initialInput && Object.keys(initialInput).length > 0) {
@@ -28,19 +37,55 @@ function EditableAddSubscriptionCard({
     }
   }, [initialInput, isCompleted]);
 
+  const onConfirm = async () => {
+    setProcessingState("confirming");
+    try {
+      await handleConfirm(toolCallId, toolName, formData);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setProcessingState("idle");
+    }
+  };
+
+  const onCancel = async () => {
+    setProcessingState("canceling");
+    try {
+      await handleCancel(toolCallId);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setProcessingState("idle");
+    }
+  };
+
+  const isProcessing = processingState !== "idle";
+  const isCanceled = resultText?.toLowerCase().includes("canceled");
+
   if (isCompleted) {
     return (
-      <div className="mt-2 p-4 rounded-xl border shadow-sm text-sm w-full max-w-sm bg-muted/50 border-border/30 opacity-75">
+      <div className="mt-2 p-4 rounded-xl border shadow-sm text-sm w-full max-w-sm bg-muted/50 border-border/30 opacity-75 animate-in fade-in-50 duration-200">
         <p className="font-semibold mb-3 flex items-center gap-2 text-muted-foreground">
-          <Sparkles className="w-4 h-4 text-muted-foreground" />
-          Added Subscription
+          {isCanceled ? (
+            <>
+              <Ban className="w-4 h-4 text-muted-foreground/60" />
+              Operation Canceled
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-4 h-4 text-emerald-500" />
+              Added Subscription
+            </>
+          )}
         </p>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-muted-foreground mb-3 bg-background/30 p-3 rounded-lg border border-border/30 text-xs">
+        <div className={`grid grid-cols-2 gap-x-4 gap-y-2 text-muted-foreground mb-3 bg-background/30 p-3 rounded-lg border border-border/30 text-xs ${isCanceled ? "line-through decoration-muted-foreground/30 opacity-60" : ""}`}>
           <div className="col-span-2">Name: <span className="text-foreground font-medium">{formData.name}</span></div>
           <div>Cost: <span className="text-foreground font-medium">{formData.cost}</span></div>
-          <div>Freq: <span className="text-foreground font-medium">{formData.billingFrequency}</span></div>
+          <div>Freq: <span className="text-foreground font-medium">{(formData.billingFrequency && FREQUENCY_LABELS[formData.billingFrequency]) || formData.billingFrequency}</span></div>
           {formData.startDate && (
-            <div className="col-span-1">Since: <span className="text-foreground font-medium">{formData.startDate.split('T')[0]}</span></div>
+            <div className="col-span-1">
+              {formData.billingFrequency === "ONE_TIME" ? "Paid On:" : "Since:"} <span className="text-foreground font-medium">{formData.startDate.split('T')[0]}</span>
+            </div>
           )}
           {formData.endDate && (
             <div className="col-span-1">Until: <span className="text-foreground font-medium">{formData.endDate.split('T')[0]}</span></div>
@@ -67,6 +112,7 @@ function EditableAddSubscriptionCard({
             className="h-8 mt-1" 
             value={formData.name || ""} 
             onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+            disabled={isProcessing}
           />
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -77,41 +123,66 @@ function EditableAddSubscriptionCard({
               className="h-8 mt-1" 
               value={formData.cost || ""} 
               onChange={(e) => setFormData({ ...formData, cost: e.target.value })} 
+              disabled={isProcessing}
             />
           </div>
           <div>
             <Label className="text-xs text-muted-foreground">Frequency</Label>
-            <Input 
-              className="h-8 mt-1" 
-              value={formData.billingFrequency || ""} 
-              onChange={(e) => setFormData({ ...formData, billingFrequency: e.target.value.toUpperCase() })} 
-            />
+            <Select 
+              value={formData.billingFrequency || "MONTHLY"} 
+              onValueChange={(val) => setFormData({ ...formData, billingFrequency: val })}
+              disabled={isProcessing}
+            >
+              <SelectTrigger className="h-8 mt-1 bg-background border border-input w-full text-xs">
+                <SelectValue>
+                  {FREQUENCY_LABELS[formData.billingFrequency || "MONTHLY"]}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="WEEKLY">Weekly</SelectItem>
+                <SelectItem value="MONTHLY">Monthly</SelectItem>
+                <SelectItem value="BI_ANNUALLY">Bi-Annually</SelectItem>
+                <SelectItem value="YEARLY">Yearly</SelectItem>
+                <SelectItem value="ONE_TIME">One-Time</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label className="text-xs text-muted-foreground">Start Date</Label>
+            <Label className="text-xs text-muted-foreground">
+              {formData.billingFrequency === "ONE_TIME" ? "Payment Date (Planned)" : "Start Date"}
+            </Label>
             <Input 
               type="date"
               className="h-8 mt-1" 
               value={formData.startDate ? formData.startDate.split('T')[0] : ""} 
               onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} 
+              disabled={isProcessing}
             />
           </div>
-          <div>
-            <Label className="text-xs text-muted-foreground">End Date (Opt)</Label>
-            <Input 
-              type="date"
-              className="h-8 mt-1" 
-              value={formData.endDate ? formData.endDate.split('T')[0] : ""} 
-              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} 
-            />
-          </div>
+          {formData.billingFrequency !== "ONE_TIME" && (
+            <div>
+              <Label className="text-xs text-muted-foreground">End Date (Opt)</Label>
+              <Input 
+                type="date"
+                className="h-8 mt-1" 
+                value={formData.endDate ? formData.endDate.split('T')[0] : ""} 
+                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} 
+                disabled={isProcessing}
+              />
+            </div>
+          )}
         </div>
       </div>
       <div className="flex gap-2 justify-end">
-        <Button size="sm" variant="ghost" onClick={() => handleCancel(toolCallId)}>Cancel</Button>
-        <Button size="sm" onClick={() => handleConfirm(toolCallId, toolName, formData)}>Confirm & Add</Button>
+        <Button size="sm" variant="ghost" onClick={onCancel} disabled={isProcessing}>
+          {processingState === "canceling" ? "Canceling..." : "Cancel"}
+        </Button>
+        <Button size="sm" onClick={onConfirm} disabled={isProcessing} className="gap-1.5">
+          {processingState === "confirming" && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          {processingState === "confirming" ? "Adding..." : "Confirm & Add"}
+        </Button>
       </div>
     </div>
   );
@@ -154,6 +225,7 @@ export function ChatUI() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [allSessions, setAllSessions] = useState<{id: string, title: string, createdAt: Date, updatedAt: Date}[]>([]);
   const [chatToDelete, setChatToDelete] = useState<string | null>(null);
+  const [deletingToolCallId, setDeletingToolCallId] = useState<string | null>(null);
   const initialLoadDone = useRef(false);
   const lastSavedMessagesRef = useRef<string>("[]");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -168,8 +240,37 @@ export function ChatUI() {
         setSessionId(latestSession.id);
         setAllSessions(sessions);
         if (latestSession.messages && Array.isArray(latestSession.messages) && latestSession.messages.length > 0) {
-          lastSavedMessagesRef.current = JSON.stringify(latestSession.messages);
-          setMessages(latestSession.messages as any);
+          // Auto-cancel any stale, unresolved prompts on page reload
+          const msgs = (latestSession.messages as any[]).map((msg: any) => {
+            if (msg.role === 'assistant' && msg.parts) {
+              const updatedParts = msg.parts.map((part: any) => {
+                const toolInv = part.toolInvocation || part;
+                if (
+                  toolInv && 
+                  toolInv.toolCallId && 
+                  (!toolInv.result && toolInv.state !== 'result' && toolInv.state !== 'output-available')
+                ) {
+                  const newPart = { ...part };
+                  if (newPart.toolInvocation) {
+                    newPart.toolInvocation = {
+                      ...newPart.toolInvocation,
+                      state: 'result',
+                      result: "Canceled (page reloaded)."
+                    };
+                  } else {
+                    newPart.state = 'output-available';
+                    newPart.output = "Canceled (page reloaded).";
+                  }
+                  return newPart;
+                }
+                return part;
+              });
+              return { ...msg, parts: updatedParts };
+            }
+            return msg;
+          });
+          lastSavedMessagesRef.current = JSON.stringify(msgs);
+          setMessages(msgs as any);
         } else {
           lastSavedMessagesRef.current = "[]";
         }
@@ -209,7 +310,34 @@ export function ChatUI() {
     try {
       const chat = await getChatSessionById(id);
       setSessionId(chat.id);
-      const msgs = (chat.messages as any) || [];
+      const msgs = ((chat.messages as any[]) || []).map((msg: any) => {
+        if (msg.role === 'assistant' && msg.parts) {
+          const updatedParts = msg.parts.map((part: any) => {
+            const toolInv = part.toolInvocation || part;
+            if (
+              toolInv && 
+              toolInv.toolCallId && 
+              (!toolInv.result && toolInv.state !== 'result' && toolInv.state !== 'output-available')
+            ) {
+              const newPart = { ...part };
+              if (newPart.toolInvocation) {
+                newPart.toolInvocation = {
+                  ...newPart.toolInvocation,
+                  state: 'result',
+                  result: "Canceled (switched chat tab)."
+                };
+              } else {
+                newPart.state = 'output-available';
+                newPart.output = "Canceled (switched chat tab).";
+              }
+              return newPart;
+            }
+            return part;
+          });
+          return { ...msg, parts: updatedParts };
+        }
+        return msg;
+      });
       lastSavedMessagesRef.current = JSON.stringify(msgs);
       setMessages(msgs);
     } catch (e) {
@@ -272,44 +400,66 @@ export function ChatUI() {
 
   const injectToolResult = (toolCallId: string, output: any) => {
     const newMessages = [...messages];
-    const lastMsg = newMessages[newMessages.length - 1];
-    if (lastMsg && lastMsg.role === 'assistant' && lastMsg.parts) {
-      const part = lastMsg.parts.find((p: any) => p.toolCallId === toolCallId || p.toolInvocation?.toolCallId === toolCallId);
-      if (part) {
-        if ((part as any).toolInvocation) {
-          (part as any).toolInvocation.state = 'result';
-          (part as any).toolInvocation.result = output;
-        } else {
-          (part as any).state = 'output-available';
-          (part as any).output = output;
+    let found = false;
+    for (const msg of newMessages) {
+      if (msg.role === 'assistant' && msg.parts) {
+        const part = msg.parts.find((p: any) => p.toolCallId === toolCallId || p.toolInvocation?.toolCallId === toolCallId);
+        if (part) {
+          if ((part as any).toolInvocation) {
+            (part as any).toolInvocation.state = 'result';
+            (part as any).toolInvocation.result = output;
+          } else {
+            (part as any).state = 'output-available';
+            (part as any).output = output;
+          }
+          found = true;
+          break;
         }
       }
     }
-    setMessages(newMessages);
+    if (found) {
+      setMessages(newMessages);
+    }
   };
 
   const handleConfirmAdd = async (toolCallId: string, toolName: string, input: any) => {
     try {
+      const isOneTime = input.billingFrequency === "ONE_TIME";
       await createSubscription({
         name: input.name,
         cost: Number(input.cost),
         billingFrequency: input.billingFrequency,
         startDate: new Date(input.startDate),
-        endDate: input.endDate ? new Date(input.endDate) : null,
+        endDate: isOneTime ? null : (input.endDate ? new Date(input.endDate) : null),
         category: input.category || 'Uncategorized',
       });
-      injectToolResult(toolCallId, `Successfully added ${input.name} (RM${input.cost} ${input.billingFrequency})!`);
+      injectToolResult(toolCallId, `Successfully added ${input.name} (RM${input.cost} ${FREQUENCY_LABELS[input.billingFrequency] || input.billingFrequency})!`);
     } catch (e: any) {
-      injectToolResult(toolCallId, `Error adding subscription: ${e.message}`);
+      console.error(e);
+      let errorMsg = "Something went wrong saving to the database.";
+      if (e.message?.includes("Expected BillingFrequency")) {
+        errorMsg = "Please restart your Next.js dev server to reload the updated database enums.";
+      } else if (e.message) {
+        errorMsg = e.message.split('\n')[0].replace(/__TURBOPACK__.*?["']/g, '').substring(0, 120);
+      }
+      injectToolResult(toolCallId, `Error: ${errorMsg}`);
     }
   };
 
   const handleConfirmDelete = async (toolCallId: string, toolName: string, input: any) => {
+    setDeletingToolCallId(toolCallId);
     try {
       await deleteSubscription(input.id);
-      injectToolResult(toolCallId, `Successfully deleted ${input.name} (RM${input.cost} ${input.billingFrequency})!`);
+      injectToolResult(toolCallId, `Successfully deleted ${input.name} (RM${input.cost} ${FREQUENCY_LABELS[input.billingFrequency] || input.billingFrequency})!`);
     } catch (e: any) {
-      injectToolResult(toolCallId, `Error deleting subscription: ${e.message}`);
+      console.error(e);
+      let errorMsg = "Something went wrong deleting the subscription.";
+      if (e.message) {
+        errorMsg = e.message.split('\n')[0].replace(/__TURBOPACK__.*?["']/g, '').substring(0, 120);
+      }
+      injectToolResult(toolCallId, `Error: ${errorMsg}`);
+    } finally {
+      setDeletingToolCallId(null);
     }
   };
 
@@ -350,8 +500,44 @@ export function ChatUI() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-    // @ts-expect-error - AI SDK v7 expects UIMessage without content, but streamText expects content
-    sendMessage({ role: "user", content: input });
+
+    const updatedMessages = [...messages];
+    let resolvedAny = false;
+
+    // Find the last assistant message and resolve any pending tool calls as canceled/bypassed
+    const lastMsg = updatedMessages[updatedMessages.length - 1];
+    if (lastMsg && lastMsg.role === 'assistant' && lastMsg.parts) {
+      lastMsg.parts.forEach((part: any) => {
+        const toolInv = part.toolInvocation || part;
+        if (
+          toolInv && 
+          toolInv.toolCallId && 
+          (!toolInv.result && toolInv.state !== 'result' && toolInv.state !== 'output-available')
+        ) {
+          if (part.toolInvocation) {
+            part.toolInvocation.state = 'result';
+            part.toolInvocation.result = "Canceled (user bypassed prompt by sending a new message).";
+          } else {
+            part.state = 'output-available';
+            part.output = "Canceled (user bypassed prompt by sending a new message).";
+          }
+          resolvedAny = true;
+        }
+      });
+    }
+
+    if (resolvedAny) {
+      setMessages(updatedMessages);
+      // Wait for state to commit before triggering sendMessage
+      setTimeout(() => {
+        // @ts-expect-error error
+        sendMessage({ role: "user", content: input });
+      }, 0);
+    } else {
+      // @ts-expect-error error
+      sendMessage({ role: "user", content: input });
+    }
+
     setInput("");
   };
 
@@ -557,7 +743,7 @@ export function ChatUI() {
                                 <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-muted-foreground mb-3 bg-background/30 p-3 rounded-lg border border-border/30 text-xs">
                                   <div className="col-span-2">Name: <span className="text-foreground font-medium">{p.input?.name || 'Unknown'}</span></div>
                                   <div>Cost: <span className="text-foreground font-medium">{p.input?.cost}</span></div>
-                                  <div>Freq: <span className="text-foreground font-medium">{p.input?.billingFrequency}</span></div>
+                                  <div>Freq: <span className="text-foreground font-medium">{(p.input?.billingFrequency && FREQUENCY_LABELS[p.input.billingFrequency]) || p.input?.billingFrequency}</span></div>
                                   {p.input?.startDate && (
                                     <div className="col-span-2">Since: <span className="text-foreground font-medium">{p.input.startDate.split('T')[0]}</span></div>
                                   )}
@@ -581,11 +767,27 @@ export function ChatUI() {
                               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-muted-foreground mb-4 bg-muted/30 p-3 rounded-lg border border-border/50 text-xs">
                                 <div className="col-span-2">Name: <span className="text-foreground font-medium">{p.input?.name || 'Unknown'}</span></div>
                                 <div>Cost: <span className="text-foreground font-medium">{p.input?.cost}</span></div>
-                                <div>Freq: <span className="text-foreground font-medium">{p.input?.billingFrequency}</span></div>
+                                <div>Freq: <span className="text-foreground font-medium">{(p.input?.billingFrequency && FREQUENCY_LABELS[p.input.billingFrequency]) || p.input?.billingFrequency}</span></div>
                               </div>
                               <div className="flex gap-2 justify-end mt-4">
-                                <Button size="sm" variant="ghost" onClick={() => injectToolResult(toolCallId, "User canceled the operation.")}>Cancel</Button>
-                                <Button size="sm" variant="destructive" onClick={() => handleConfirmDelete(toolCallId, toolName, p.input)}>Confirm Delete</Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  onClick={() => injectToolResult(toolCallId, "User canceled the operation.")}
+                                  disabled={deletingToolCallId === toolCallId}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="destructive" 
+                                  onClick={() => handleConfirmDelete(toolCallId, toolName, p.input)}
+                                  disabled={deletingToolCallId === toolCallId}
+                                  className="gap-1.5"
+                                >
+                                  {deletingToolCallId === toolCallId && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                                  {deletingToolCallId === toolCallId ? "Deleting..." : "Confirm Delete"}
+                                </Button>
                               </div>
                             </div>
                           </React.Fragment>

@@ -1,4 +1,13 @@
-import { BillingFrequency } from "@/generated/prisma/client";
+export type BillingFrequency = "WEEKLY" | "MONTHLY" | "BI_ANNUALLY" | "YEARLY" | "ONE_TIME";
+
+export const BillingFrequency = {
+  WEEKLY: "WEEKLY" as const,
+  MONTHLY: "MONTHLY" as const,
+  BI_ANNUALLY: "BI_ANNUALLY" as const,
+  YEARLY: "YEARLY" as const,
+  ONE_TIME: "ONE_TIME" as const,
+};
+
 import { addDays, addMonths, addWeeks, addYears, differenceInDays } from "date-fns";
 
 /** How many times per year this frequency fires */
@@ -7,6 +16,7 @@ export const FREQUENCY_MULTIPLIER: Record<BillingFrequency, number> = {
   [BillingFrequency.MONTHLY]:     12,
   [BillingFrequency.BI_ANNUALLY]: 2,
   [BillingFrequency.YEARLY]:      1,
+  [BillingFrequency.ONE_TIME]:    0, // Non-recurring
 };
 
 export const FREQUENCY_LABEL: Record<BillingFrequency, string> = {
@@ -14,6 +24,7 @@ export const FREQUENCY_LABEL: Record<BillingFrequency, string> = {
   [BillingFrequency.MONTHLY]:     "Monthly",
   [BillingFrequency.BI_ANNUALLY]: "Bi-Annually",
   [BillingFrequency.YEARLY]:      "Yearly",
+  [BillingFrequency.ONE_TIME]:    "One-Time",
 };
 
 /** Short suffix shown inline with an amount: "/wk", "/mo", "/6mo", "/yr" */
@@ -22,6 +33,7 @@ export const FREQUENCY_SHORT: Record<BillingFrequency, string> = {
   [BillingFrequency.MONTHLY]:     "/mo",
   [BillingFrequency.BI_ANNUALLY]: "/6mo",
   [BillingFrequency.YEARLY]:      "/yr",
+  [BillingFrequency.ONE_TIME]:    " once",
 };
 
 export type NormalizeView = "original" | "weekly" | "monthly" | "yearly";
@@ -32,6 +44,9 @@ export function calculateNormalizedCost(
   frequency: BillingFrequency,
   view: NormalizeView
 ): number {
+  if (frequency === BillingFrequency.ONE_TIME) {
+    return view === "original" ? cost : 0;
+  }
   const annualCost = cost * FREQUENCY_MULTIPLIER[frequency];
   switch (view) {
     case "weekly":   return annualCost / 52;
@@ -57,6 +72,7 @@ export const NORMALIZE_VIEW_SUFFIX: Record<NormalizeView, string> = {
 
 /** True prorated monthly cost for any frequency */
 export function calculateTrueMonthlyCost(cost: number, frequency: BillingFrequency): number {
+  if (frequency === BillingFrequency.ONE_TIME) return 0;
   return (cost * FREQUENCY_MULTIPLIER[frequency]) / 12;
 }
 
@@ -67,6 +83,7 @@ function advanceByFrequency(date: Date, frequency: BillingFrequency): Date {
     case BillingFrequency.MONTHLY:     return addMonths(date, 1);
     case BillingFrequency.BI_ANNUALLY: return addMonths(date, 6);
     case BillingFrequency.YEARLY:      return addYears(date, 1);
+    case BillingFrequency.ONE_TIME:    return addYears(date, 100); // Shift far into future
   }
 }
 
@@ -77,6 +94,9 @@ export function calculateNextPaymentDate(
   currentDate: Date = new Date()
 ): Date {
   let next = new Date(startDate);
+  if (frequency === BillingFrequency.ONE_TIME) {
+    return next;
+  }
   if (next > currentDate) return next;
   while (next <= currentDate) {
     next = advanceByFrequency(next, frequency);
@@ -94,6 +114,15 @@ export function getPaymentsInWindow(
 ): Array<{ date: Date; amount: number }> {
   const endDate = addMonths(currentDate, months);
   const payments: Array<{ date: Date; amount: number }> = [];
+  
+  if (frequency === BillingFrequency.ONE_TIME) {
+    const payDate = new Date(startDate);
+    if (payDate >= currentDate && payDate <= endDate) {
+      payments.push({ date: payDate, amount: cost });
+    }
+    return payments;
+  }
+
   let next = calculateNextPaymentDate(startDate, frequency, currentDate);
   while (next <= endDate) {
     payments.push({ date: new Date(next), amount: cost });
@@ -177,6 +206,24 @@ export function buildYearlyCalendar(
   const endDate = addMonths(currentDate, 12);
 
   for (const sub of subscriptions) {
+    if (sub.billingFrequency === BillingFrequency.ONE_TIME) {
+      const payDate = new Date(sub.startDate);
+      if (payDate >= currentDate && payDate <= endDate) {
+        const label = payDate.toLocaleDateString("en-MY", { month: "short", year: "numeric" });
+        const month = months.find((m) => m.label === label);
+        if (month) {
+          month.total += sub.cost;
+          month.payments.push({
+            name:     sub.name,
+            date:     new Date(payDate),
+            amount:   sub.cost,
+            category: sub.category,
+          });
+        }
+      }
+      continue;
+    }
+
     let next = calculateNextPaymentDate(sub.startDate, sub.billingFrequency, currentDate);
     while (next <= endDate) {
       const label = next.toLocaleDateString("en-MY", { month: "short", year: "numeric" });

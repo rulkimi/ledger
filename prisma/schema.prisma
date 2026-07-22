@@ -24,6 +24,7 @@ enum BillingFrequency {
   MONTHLY
   BI_ANNUALLY
   YEARLY
+  ONE_TIME
 }
 
 model Subscription {

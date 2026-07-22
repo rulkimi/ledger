@@ -34,7 +34,10 @@ You help users manage their subscriptions, analyze their spending, and you are N
 You MUST use your tools to fetch their actual subscription data before giving specific advice.
 Always format currency in their preferred currency: ${currency}.
 Today's date is: ${new Date().toISOString().split('T')[0]}. Use this to correctly calculate any relative dates the user mentions (e.g. "today", "yesterday", "last week").
+We also support a ONE_TIME billing frequency for one-time payments, debts, or single bills (where the payment is made once on the start date and doesn't recur in future months, and has no end date). If a user wants to track a one-time bill/debt, use ONE_TIME as the billingFrequency and omit the endDate.
+CRITICAL: If a user specifies a future date for a one-time payment/debt (e.g., "I'm going to pay Farid in 2 months" or "due on Sept 15"), you MUST calculate that future target date relative to Today's date and set the 'startDate' parameter to that future target date (not today's date). A ONE_TIME payment is scheduled exactly on its 'startDate'.
 CRITICAL: Keep your responses EXTREMELY concise. Use short bullet points, max 2-3 short sentences total per response. Get straight to the point. No fluff.
+Allow the user to log their one-time debts or payments in NetLedger using the ONE_TIME frequency instead of forcing them into monthly/yearly plans.
 CRITICAL: You must ALWAYS output a short chat message BEFORE calling ANY tool (including getSubscriptions). If you are about to check their database, say something like "Let me take a look at your current subscriptions..." first.
 CRITICAL: When the user asks to add or delete a subscription, ALWAYS call getSubscriptions first. After reviewing the data, output a genuine, personalized chat message analyzing their request (e.g., roasting them if they are adding a 3rd streaming service). DO NOT just say a robotic "Let me add that." Give real advice, and THEN call the tool to draft the addition/deletion.`,
     tools: {
@@ -52,10 +55,10 @@ CRITICAL: When the user asks to add or delete a subscription, ALWAYS call getSub
           messageToUser: z.string().describe("Your genuine, personalized chat message analyzing their request (e.g. roasting them for a bad financial choice, or praising them). This will be shown to the user right above the confirmation card."),
           name: z.string(),
           cost: z.coerce.number(),
-          billingFrequency: z.enum(["MONTHLY", "YEARLY", "WEEKLY", "BI_ANNUALLY", "QUARTERLY"]),
+          billingFrequency: z.enum(["MONTHLY", "YEARLY", "WEEKLY", "BI_ANNUALLY", "ONE_TIME"]),
           category: z.string().optional(),
           startDate: z.string().describe("ISO date string for when it started"),
-          endDate: z.string().optional().describe("Optional ISO date string for when it ends (e.g. for installments or fixed-term subscriptions)"),
+          endDate: z.string().optional().describe("Optional ISO date string for when it ends (e.g. for installments or fixed-term subscriptions, omit for ONE_TIME)"),
         }),
       },
       deleteSubscription: {
@@ -65,7 +68,7 @@ CRITICAL: When the user asks to add or delete a subscription, ALWAYS call getSub
           id: z.string(),
           name: z.string().describe("The name of the subscription being deleted, so the user knows what they are confirming."),
           cost: z.coerce.number(),
-          billingFrequency: z.enum(["MONTHLY", "YEARLY", "WEEKLY", "BI_ANNUALLY", "QUARTERLY"]),
+          billingFrequency: z.enum(["MONTHLY", "YEARLY", "WEEKLY", "BI_ANNUALLY", "ONE_TIME"]),
           startDate: z.string().describe("ISO date string for when it started"),
         }),
       },

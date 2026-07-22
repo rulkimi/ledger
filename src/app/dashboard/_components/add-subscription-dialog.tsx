@@ -10,12 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createSubscription } from "@/actions/subscription";
 import { Plus, Loader2 } from "lucide-react";
 import type { BillingFrequency as ServerBillingFrequency } from "@/generated/prisma/client";
+import { FREQUENCY_LABEL } from "@/lib/subscription-utils";
 
 const BILLING_FREQUENCIES = {
   WEEKLY:      "WEEKLY",
   MONTHLY:     "MONTHLY",
   BI_ANNUALLY: "BI_ANNUALLY",
   YEARLY:      "YEARLY",
+  ONE_TIME:    "ONE_TIME",
 } as const;
 type BillingFrequency = (typeof BILLING_FREQUENCIES)[keyof typeof BILLING_FREQUENCIES];
 
@@ -47,7 +49,7 @@ export function AddSubscriptionDialog() {
         cost:             Number(formData.get("cost")),
         billingFrequency: frequency as ServerBillingFrequency,
         startDate:        new Date(formData.get("startDate") as string),
-        endDate:          formData.get("endDate") ? new Date(formData.get("endDate") as string) : undefined,
+        endDate:          frequency === "ONE_TIME" ? undefined : (formData.get("endDate") ? new Date(formData.get("endDate") as string) : undefined),
         category:         category !== "none" ? category : undefined,
         notes:            (formData.get("notes") as string) || undefined,
       });
@@ -97,27 +99,34 @@ export function AddSubscriptionDialog() {
               <Label htmlFor="add-frequency" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Frequency</Label>
               <Select value={frequency} onValueChange={(v) => setFrequency((v ?? "MONTHLY") as BillingFrequency)}>
                 <SelectTrigger id="add-frequency" className="bg-muted/30 w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {FREQUENCY_LABEL[frequency]}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="WEEKLY">Weekly</SelectItem>
                   <SelectItem value="MONTHLY">Monthly</SelectItem>
                   <SelectItem value="BI_ANNUALLY">Bi-Annually</SelectItem>
                   <SelectItem value="YEARLY">Yearly</SelectItem>
+                  <SelectItem value="ONE_TIME">One-Time</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className={frequency === "ONE_TIME" ? "grid grid-cols-1" : "grid grid-cols-2 gap-4"}>
             <div className="space-y-1.5">
-              <Label htmlFor="add-startDate" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Start Date</Label>
+              <Label htmlFor="add-startDate" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                {frequency === "ONE_TIME" ? "Payment Date (Planned)" : "Start Date"}
+              </Label>
               <Input id="add-startDate" name="startDate" type="date" required className="bg-muted/30" />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="add-endDate" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">End Date (Optional)</Label>
-              <Input id="add-endDate" name="endDate" type="date" className="bg-muted/30" />
-            </div>
+            {frequency !== "ONE_TIME" && (
+              <div className="space-y-1.5">
+                <Label htmlFor="add-endDate" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">End Date (Optional)</Label>
+                <Input id="add-endDate" name="endDate" type="date" className="bg-muted/30" />
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5">
