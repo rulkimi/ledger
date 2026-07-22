@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,31 +41,30 @@ interface Props {
 
 export function EditSubscriptionDialog({ id, defaultValues }: Props) {
   const [open, setOpen]         = useState(false);
-  const [loading, setLoading]   = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [error, setError]       = useState<string | null>(null);
   const [frequency, setFrequency] = useState<BillingFrequency>(defaultValues.billingFrequency);
   const [category, setCategory]   = useState<string>(defaultValues.category || "none");
 
   async function action(formData: FormData) {
-    setLoading(true);
     setError(null);
-    try {
-      await updateSubscription(id, {
-        name:             formData.get("name") as string,
-        cost:             Number(formData.get("cost")),
-        billingFrequency: frequency as ServerBillingFrequency,
-        startDate:        new Date(formData.get("startDate") as string),
-        endDate:          frequency === "ONE_TIME" ? undefined : (formData.get("endDate") ? new Date(formData.get("endDate") as string) : undefined),
-        category:         category !== "none" ? category : undefined,
-        notes:            (formData.get("notes") as string) || undefined,
-      });
-      setOpen(false);
-    } catch (e) {
-      setError("Failed to update. Please try again.");
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+    startTransition(async () => {
+      try {
+        await updateSubscription(id, {
+          name:             formData.get("name") as string,
+          cost:             Number(formData.get("cost")),
+          billingFrequency: frequency as ServerBillingFrequency,
+          startDate:        new Date(formData.get("startDate") as string),
+          endDate:          frequency === "ONE_TIME" ? undefined : (formData.get("endDate") ? new Date(formData.get("endDate") as string) : undefined),
+          category:         category !== "none" ? category : undefined,
+          notes:            (formData.get("notes") as string) || undefined,
+        });
+        setOpen(false);
+      } catch (e) {
+        setError("Failed to update. Please try again.");
+        console.error(e);
+      }
+    });
   }
 
   return (
@@ -195,8 +194,8 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
             <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" size="sm" disabled={loading} className="min-w-[90px]">
-              {loading ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Saving…</> : "Save changes"}
+            <Button type="submit" size="sm" disabled={isPending} className="min-w-[90px]">
+              {isPending ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Saving…</> : "Save changes"}
             </Button>
           </DialogFooter>
         </form>

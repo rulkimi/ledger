@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { deleteSubscription } from "@/actions/subscription";
@@ -8,21 +8,20 @@ import { Trash2, Loader2 } from "lucide-react";
 
 export function DeleteSubscriptionButton({ id, name }: { id: string; name: string }) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  async function handleDelete() {
-    setLoading(true);
+  function handleDelete() {
     setError(null);
-    try {
-      await deleteSubscription(id);
-      setOpen(false);
-    } catch (e) {
-      setError("Failed to delete. Please try again.");
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+    startTransition(async () => {
+      try {
+        await deleteSubscription(id);
+        setOpen(false);
+      } catch (e) {
+        setError("Failed to delete. Please try again.");
+        console.error(e);
+      }
+    });
   }
 
   return (
@@ -53,18 +52,18 @@ export function DeleteSubscriptionButton({ id, name }: { id: string; name: strin
           </p>
 
           <DialogFooter>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)} disabled={loading}>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)} disabled={isPending}>
               Cancel
             </Button>
             <Button
               type="button"
               variant="destructive"
               size="sm"
-              disabled={loading}
+              disabled={isPending}
               onClick={handleDelete}
               className="min-w-[90px]"
             >
-              {loading ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Deleting…</> : "Delete"}
+              {isPending ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Deleting…</> : "Delete"}
             </Button>
           </DialogFooter>
         </div>
