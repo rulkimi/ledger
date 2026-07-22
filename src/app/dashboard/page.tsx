@@ -5,6 +5,12 @@ import NextMonthPreview from "./_components/next-month-preview";
 import { AddSubscriptionDialog } from "./_components/add-subscription-dialog";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Overview | NetLedger",
+  description: "Track your subscriptions, monthly burn, and upcoming cash flow projections on your NetLedger financial dashboard.",
+};
 
 export default async function DashboardPage() {
   return (

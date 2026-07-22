@@ -16,9 +16,37 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ledger — Personal Finance & Subscription Tracker",
+  metadataBase: new URL("https://netledger.com"),
+  title: "NetLedger — Personal Finance & Subscription Tracker",
   description:
-    "Know exactly what you owe, when you owe it. Ledger gives you accurate cash-flow forecasting and prorated budgeting for all your subscriptions.",
+    "Know exactly what you owe, when you owe it. NetLedger gives you accurate cash-flow forecasting and prorated budgeting for all your subscriptions.",
+  icons: {
+    icon: "/ledger.svg",
+  },
+  openGraph: {
+    title: "NetLedger — Personal Finance & Subscription Tracker",
+    description:
+      "Know exactly what you owe, when you owe it. NetLedger gives you accurate cash-flow forecasting and prorated budgeting for all your subscriptions.",
+    url: "https://netledger.com",
+    siteName: "NetLedger",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "NetLedger — Personal Finance & Subscription Tracker",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NetLedger — Personal Finance & Subscription Tracker",
+    description:
+      "Know exactly what you owe, when you owe it. NetLedger gives you accurate cash-flow forecasting and prorated budgeting for all your subscriptions.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({

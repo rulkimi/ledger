@@ -3,6 +3,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import SubscriptionList from "../_components/subscription-list";
 import { AddSubscriptionDialog } from "../_components/add-subscription-dialog";
 import type { NormalizeView } from "@/lib/subscription-utils";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "All Bills | NetLedger",
+  description: "View and manage all your recurring bills and subscription costs dynamically normalized.",
+};
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 

@@ -2,6 +2,12 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { buildYearlyCalendar } from "@/lib/subscription-utils";
 import { CalendarView } from "./calendar-view";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Calendar Forecast | NetLedger",
+  description: "View dynamic monthly billing projections, rolling due dates, and year-long cash flow forecasts.",
+};
 
 export default async function CalendarPage() {
   const session = await auth();

@@ -3,8 +3,15 @@ import { redirect } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import Image from "next/image";
 import { LoginForm } from "./login-form";
 import { TrendingUp, ShieldCheck, BarChart3 } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sign In | NetLedger",
+  description: "Sign in to your NetLedger account to manage your subscriptions and check your rolling forecasts.",
+};
 
 const perks = [
   { icon: TrendingUp, text: "Rolling due-date forecasting" },
@@ -35,8 +42,9 @@ export default async function SignInPage(props: { searchParams: Promise<{ regist
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-white/8 rounded-full blur-3xl" />
 
-        <Link href="/" className="relative font-extrabold text-2xl tracking-tight text-white">
-          Ledger
+        <Link href="/" className="relative font-extrabold text-2xl tracking-tight text-white flex items-center gap-2.5">
+          <Image src="/ledger.png" alt="NetLedger Logo" width={32} height={32} className="w-8 h-8 invert-0 dark:invert" />
+          <span>NetLedger</span>
         </Link>
 
         <div className="relative space-y-8">
@@ -45,7 +53,7 @@ export default async function SignInPage(props: { searchParams: Promise<{ regist
               Your subscriptions,<br />completely under control.
             </h2>
             <p className="mt-3 text-white/65 text-sm leading-relaxed max-w-sm">
-              Ledger gives you accurate rolling due dates, prorated monthly costs,
+              NetLedger gives you accurate rolling due dates, prorated monthly costs,
               and a 6-month cash-flow forecast — all in one place.
             </p>
           </div>
@@ -62,15 +70,16 @@ export default async function SignInPage(props: { searchParams: Promise<{ regist
           </ul>
         </div>
 
-        <p className="relative text-white/40 text-xs">© {new Date().getFullYear()} Ledger</p>
+        <p className="relative text-white/40 text-xs">© {new Date().getFullYear()} NetLedger</p>
       </div>
 
       {/* ── Right form panel ── */}
       <div className="flex items-center justify-center p-6 sm:p-10 lg:p-16">
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
-          <Link href="/" className="lg:hidden block font-extrabold text-2xl tracking-tight brand-text">
-            Ledger
+          <Link href="/" className="lg:hidden flex items-center gap-2 font-extrabold text-2xl tracking-tight brand-text">
+            <Image src="/ledger.png" alt="NetLedger Logo" width={28} height={28} className="w-7 h-7" />
+            <span>NetLedger</span>
           </Link>
 
           <div>

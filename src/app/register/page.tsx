@@ -1,8 +1,15 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { TrendingUp, ShieldCheck, BarChart3 } from "lucide-react";
 import { RegisterForm } from "./register-form";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Create Account | NetLedger",
+  description: "Join NetLedger to organize your recurring expenses, optimize your monthly burn, and forecast your future bills.",
+};
 
 const perks = [
   { icon: TrendingUp, text: "Rolling due-date forecasting" },
@@ -25,8 +32,9 @@ export default async function RegisterPage() {
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-white/8 rounded-full blur-3xl" />
 
-        <Link href="/" className="relative font-extrabold text-2xl tracking-tight text-white">
-          Ledger
+        <Link href="/" className="relative font-extrabold text-2xl tracking-tight text-white flex items-center gap-2.5">
+          <Image src="/ledger.svg" alt="NetLedger Logo" width={32} height={32} className="w-8 h-8 invert-0 dark:invert" />
+          <span>NetLedger</span>
         </Link>
 
         <div className="relative space-y-8">
@@ -35,7 +43,7 @@ export default async function RegisterPage() {
               Start tracking your<br />subscriptions today.
             </h2>
             <p className="mt-3 text-white/65 text-sm leading-relaxed max-w-sm">
-              Ledger helps you take control of your recurring expenses with powerful forecasting and normalization.
+              NetLedger helps you take control of your recurring expenses with powerful forecasting and normalization.
             </p>
           </div>
 
@@ -51,15 +59,16 @@ export default async function RegisterPage() {
           </ul>
         </div>
 
-        <p className="relative text-white/40 text-xs">© {new Date().getFullYear()} Ledger</p>
+        <p className="relative text-white/40 text-xs">© {new Date().getFullYear()} NetLedger</p>
       </div>
 
       {/* ── Right form panel ── */}
       <div className="flex items-center justify-center p-6 sm:p-10 lg:p-16">
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile logo */}
-          <Link href="/" className="lg:hidden block font-extrabold text-2xl tracking-tight brand-text">
-            Ledger
+          <Link href="/" className="lg:hidden flex items-center gap-2 font-extrabold text-2xl tracking-tight brand-text">
+            <Image src="/ledger.svg" alt="NetLedger Logo" width={28} height={28} className="w-7 h-7" />
+            <span>NetLedger</span>
           </Link>
 
           <div>

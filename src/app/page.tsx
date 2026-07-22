@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/auth";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, TrendingUp, ShieldCheck, Layers, CheckCircle2 } from "lucide-react";
 import { FadeInStaggerGroup, FadeInStaggerItem, ScrollInViewGroup, ScrollInViewElement, HoverCardMotion } from "@/components/ui/motion-wrapper";
@@ -41,7 +42,10 @@ export default async function HomePage() {
       {/* Nav */}
       <nav className="sticky top-0 z-50 liquid-glass h-16">
         <div className="container mx-auto max-w-5xl h-full flex items-center justify-between px-4 sm:px-6">
-          <span className="font-extrabold text-xl tracking-tight brand-text">Ledger</span>
+          <Link href="/" className="flex items-center">
+            <Image src="/ledger-title.svg" alt="NetLedger" width={102} height={32} className="h-8 w-auto object-contain" />
+            <h1 className="sr-only">NetLedger</h1>
+          </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             {session?.user ? (
@@ -94,7 +98,7 @@ export default async function HomePage() {
 
           <FadeInStaggerItem>
             <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-lg leading-relaxed mx-auto">
-              Ledger calculates your true monthly burn across every billing cycle and
+              NetLedger calculates your true monthly burn across every billing cycle and
               forecasts your cash flow 12 months out. Stay in complete control.
             </p>
           </FadeInStaggerItem>
@@ -177,7 +181,7 @@ export default async function HomePage() {
       )}
 
       <footer className="border-t border-border/50 py-7 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Ledger · Personal Finance & Subscription Tracker
+        © {new Date().getFullYear()} NetLedger · Personal Finance & Subscription Tracker
       </footer>
     </div>
   );

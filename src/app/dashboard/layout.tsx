@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { signOut } from "@/auth";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { DashboardNav } from "./_components/nav-link";
@@ -24,8 +25,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
           {/* Logo + nav */}
           <div className="flex items-center gap-5">
-            <Link href="/" className="font-extrabold text-xl tracking-tight brand-text flex-shrink-0">
-              Ledger
+            <Link href="/" className="flex-shrink-0 flex items-center">
+              <Image src="/ledger-title.svg" alt="NetLedger" width={102} height={32} className="h-8 w-auto object-contain" />
+              <span className="sr-only">NetLedger</span>
             </Link>
             <DashboardNav />
           </div>

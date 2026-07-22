@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 import { ChatUI } from "./chat-ui";
 
 export const metadata: Metadata = {
-  title: "Cento | Ledger",
+  title: "Cento | NetLedger",
   description: "Your personal financial AI advisor.",
 };
 
