@@ -35,7 +35,7 @@ async function CentoThoughtsText() {
   let latestMsgText = "";
 
   if (subs.length === 0) {
-    latestMsgText = "Your ledger is completely clean! You aren't wasting any money on subscriptions yet. Click below to start tracking!";
+    latestMsgText = "Your ledger is completely clean! You aren't wasting any money on subscriptions yet. Click add to start tracking!";
   } else {
     try {
       const formattedSubs = subs
