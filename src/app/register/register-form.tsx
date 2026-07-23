@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Mail, LockKeyhole, User, Loader2 } from "lucide-react";
+import { Mail, LockKeyhole, User, Loader2, Eye, EyeOff } from "lucide-react";
 import { registerUser } from "@/actions/auth";
 
 export function RegisterForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -76,13 +77,16 @@ export function RegisterForm() {
           <Input
             id="password"
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             autoComplete="new-password"
             required
             minLength={8}
             placeholder="At least 8 characters"
-            className="pl-9 h-10 bg-muted/40 border-border/60 focus-visible:bg-background transition-colors"
+            className="pl-9 pr-10 h-10 bg-muted/40 border-border/60 focus-visible:bg-background transition-colors"
           />
+          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
         </div>
       </div>
 

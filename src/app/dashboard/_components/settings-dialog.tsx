@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Settings, Loader2, LogOut, Monitor, Sun, Moon } from "lucide-react";
+import { Settings, Loader2, LogOut, Monitor, Sun, Moon, Eye, EyeOff } from "lucide-react";
 import { updateProfile } from "@/actions/user";
 import { logout } from "@/actions/auth";
 import { useTheme } from "next-themes";
@@ -34,6 +34,8 @@ export function SettingsDialog({
   const [centoRoastLevel, setCentoRoastLevel] = useState(user.centoRoastLevel || "MEDIUM");
   const [currentPassword, setCurrentPassword] = useState("");
   const [password, setPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const handleSave = async (e: React.FormEvent) => {
@@ -163,11 +165,21 @@ export function SettingsDialog({
           </div>
           <div className="space-y-2 pt-2 border-t border-border/40">
             <Label htmlFor="current-password">Current Password</Label>
-            <Input id="current-password" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Required to change password" />
+            <div className="relative">
+              <Input id="current-password" type={showCurrentPassword ? "text" : "password"} autoComplete="new-password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Required to change password" />
+              <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">New Password</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank to keep current" />
+            <div className="relative">
+              <Input id="password" type={showPassword ? "text" : "password"} autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank to keep current" />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
           <div className="flex gap-2 pt-2">
             <Button 
