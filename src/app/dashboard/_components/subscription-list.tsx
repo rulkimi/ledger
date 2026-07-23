@@ -16,6 +16,7 @@ import { FilterBar } from "./filter-bar";
 import { EditSubscriptionDialog } from "./edit-subscription-dialog";
 import type { BillingFrequency as ServerBillingFrequency } from "@/generated/prisma/client";
 import { Inbox } from "lucide-react";
+import { AnimatedList, AnimatedListItem } from "./animated-list";
 
 export default async function SubscriptionList({
   category,
@@ -101,7 +102,7 @@ export default async function SubscriptionList({
             </div>
 
 
-          <div className="flex-1 overflow-y-auto divide-y divide-border/70 min-h-0">
+          <AnimatedList>
             {sorted.map((sub) => {
               const days         = daysUntil(sub.nextPaymentDate, now);
             const isUrgent     = days <= 7;
@@ -109,10 +110,7 @@ export default async function SubscriptionList({
             const isNormalized = view !== "original";
 
             return (
-              <div
-                key={sub.id}
-                className="group flex items-center gap-4 px-4 py-3.5 hover:bg-muted/20 transition-colors"
-              >
+              <AnimatedListItem key={sub.id} id={sub.id}>
                 {/* Status dot */}
                 <span className={`h-1.5 w-1.5 rounded-full flex-shrink-0 ${
                   isVeryUrgent ? "bg-destructive animate-pulse"
@@ -177,10 +175,10 @@ export default async function SubscriptionList({
                   />
                   <DeleteSubscriptionButton id={sub.id} name={sub.name} />
                 </div>
-              </div>
+              </AnimatedListItem>
             );
           })}
-          </div>
+          </AnimatedList>
         </div>
       )}
     </div>

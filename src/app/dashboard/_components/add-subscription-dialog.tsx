@@ -36,6 +36,8 @@ export function AddSubscriptionDialog() {
   const [category, setCategory]   = useState("none");
   const [error, setError]         = useState<string | null>(null);
 
+  const todayStr = new Date().toISOString().split("T")[0];
+
   function resetForm() {
     setFrequency("MONTHLY");
     setCategory("none");
@@ -119,7 +121,7 @@ export function AddSubscriptionDialog() {
               <Label htmlFor="add-startDate" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {frequency === "ONE_TIME" ? "Payment Date (Planned)" : "Start Date"}
               </Label>
-              <Input id="add-startDate" name="startDate" type="date" required className="bg-muted/30" />
+              <Input id="add-startDate" name="startDate" type="date" defaultValue={todayStr} required className="bg-muted/30" />
             </div>
             {frequency !== "ONE_TIME" && (
               <div className="space-y-1.5">

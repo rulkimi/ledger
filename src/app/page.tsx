@@ -141,10 +141,12 @@ export default async function HomePage() {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
           <ScrollInViewElement>
             <div className="space-y-6">
-              <div className="p-3 rounded-xl brand-gradient w-fit shadow-sm">
-                <TrendingUp className="h-5 w-5 text-white" />
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl brand-gradient w-fit shadow-sm">
+                  <TrendingUp className="h-5 w-5 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold">Cash-Flow Forecasting</h3>
               </div>
-              <h3 className="text-2xl font-bold">Cash-Flow Forecasting</h3>
               <p className="text-muted-foreground leading-relaxed">
                 See every upcoming payment on a rolling calendar — weekly, monthly, bi-annual, or yearly. No more surprises. NetLedger calculates your true monthly burn across every billing cycle and forecasts your cash flow.
               </p>
@@ -163,11 +165,13 @@ export default async function HomePage() {
           {features.slice(1).map((f) => (
             <ScrollInViewElement key={f.title}>
               <div className="group h-full rounded-2xl border border-border/60 bg-card p-7 flex flex-col gap-4">
-                <div className="p-3 rounded-xl brand-gradient w-fit shadow-sm">
-                  <f.icon className="h-5 w-5 text-white" />
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl brand-gradient w-fit shadow-sm">
+                    <f.icon className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="font-bold text-base">{f.title}</h3>
                 </div>
                 <div>
-                  <h3 className="font-bold text-base mb-1.5">{f.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{f.desc}</p>
                 </div>
               </div>

@@ -61,9 +61,9 @@ export default async function StatsStrip({ category }: { category?: string }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-border/60 border border-border/60 rounded-xl overflow-hidden">
       {/* 1. Avg Monthly */}
-      <Link href="/dashboard/bills" className="bg-card flex flex-col items-center justify-center gap-0.5 px-1 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-3 hover:bg-muted/50 transition-colors group">
+      <Link href="/dashboard/bills" className="bg-card flex flex-col items-center justify-center gap-1 px-1 py-3 sm:flex-row sm:items-center sm:justify-start sm:gap-3 sm:px-4 sm:py-3 hover:bg-muted/50 transition-colors group w-full h-full">
         <Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
-        <div className="min-w-0 text-center sm:text-left">
+        <div className="min-w-0 text-center sm:text-left flex-1">
           <p className="text-[11px] sm:text-sm font-bold truncate text-foreground group-hover:text-primary transition-colors">{formatCurrency(monthly, currency)}</p>
           <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-tight">Avg Monthly</p>
         </div>
@@ -74,9 +74,9 @@ export default async function StatsStrip({ category }: { category?: string }) {
 
       {/* 3 & 4 */}
       {statsAfterBurn.map((s, idx) => (
-        <Link href="/dashboard/calendar" key={idx} className="bg-card flex flex-col items-center justify-center gap-0.5 px-1 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-3 hover:bg-muted/50 transition-colors group">
+        <Link href="/dashboard/calendar" key={idx} className="bg-card flex flex-col items-center justify-center gap-1 px-1 py-3 sm:flex-row sm:items-center sm:justify-start sm:gap-3 sm:px-4 sm:py-3 hover:bg-muted/50 transition-colors group w-full h-full">
           <s.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 text-muted-foreground group-hover:text-primary transition-colors" />
-          <div className="min-w-0 text-center sm:text-left">
+          <div className="min-w-0 text-center sm:text-left flex-1">
             <p className="text-[11px] sm:text-sm font-bold truncate text-foreground group-hover:text-primary transition-colors">{s.value}</p>
             <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-tight truncate">{s.label}</p>
           </div>

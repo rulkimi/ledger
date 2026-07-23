@@ -79,21 +79,20 @@ export function BurnRateCard({
   return (
     <button 
       onClick={() => { setIsEditing(true); }}
-      className="bg-card flex flex-col items-center justify-center gap-0.5 px-1 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-3 hover:bg-muted/20 transition-colors group text-left w-full h-full"
+      className="bg-card flex flex-col items-center justify-center gap-1 px-1 py-3 sm:flex-row sm:items-center sm:justify-start sm:gap-3 sm:px-4 sm:py-3 hover:bg-muted/20 transition-colors group text-left w-full h-full relative"
     >
-      <div className="relative">
-        <Flame className={`h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 ${isDanger ? "text-destructive" : "text-primary"}`} />
-        <div className="absolute -top-1 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Pencil className="h-2 w-2 text-muted-foreground" />
-        </div>
-      </div>
-      <div className="min-w-0 text-center sm:text-left">
+      <Flame className={`h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 ${isDanger ? "text-destructive" : "text-primary"}`} />
+      <div className="min-w-0 text-center sm:text-left flex-1 sm:pr-6">
         <p className={`text-[11px] sm:text-sm font-bold truncate ${isDanger ? "text-destructive" : "text-foreground"}`}>
           {valueStr}
         </p>
         <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-tight truncate">
           {labelStr}
         </p>
+      </div>
+      
+      <div className="hidden sm:flex absolute right-3 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground/50 group-hover:text-foreground">
+        <Pencil className="h-3.5 w-3.5" />
       </div>
     </button>
   );

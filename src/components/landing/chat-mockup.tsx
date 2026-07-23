@@ -24,7 +24,7 @@ export function ChatMockup() {
       type: "ADD" | "DELETE";
       name: string;
       cost: number;
-      status: "PENDING" | "CONFIRMED";
+      status: "PENDING" | "CONFIRMED" | "CANCELLED";
     };
   };
 
@@ -176,9 +176,18 @@ export function ChatMockup() {
     }
   };
 
+  const handleCancelTool = (msgId: number) => {
+    play("click");
+    setMessages(prev => prev.map(m => m.id === msgId && m.tool ? { ...m, tool: { ...m.tool, status: "CANCELLED" } } : m));
+    
+    setTimeout(() => {
+      setMessages(prev => [...prev, { id: Date.now(), role: "ai", content: "Got it. Action cancelled." }]);
+    }, 500);
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="grid md:grid-cols-5 gap-6 h-[500px]">
+      <div className="flex flex-col md:grid md:grid-cols-5 gap-6 h-auto md:h-[500px]">
         
         {/* Chat UI (Left, wider) */}
         <motion.div 
@@ -186,7 +195,7 @@ export function ChatMockup() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ type: "spring", bounce: 0, duration: 0.8 }}
-          className="md:col-span-3 rounded-2xl border border-border/60 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col h-full overflow-hidden relative"
+          className="md:col-span-3 rounded-2xl border border-border/60 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col overflow-hidden relative h-[450px] md:h-full"
         >
           <div className="h-14 border-b border-border/40 flex items-center px-4 bg-muted/20">
             <div className="flex items-center gap-2">
@@ -224,7 +233,14 @@ export function ChatMockup() {
                       
                       {msg.tool.status === "PENDING" ? (
                         <div className="grid grid-cols-2 gap-2 mt-3">
-                          <Button size="sm" variant="outline" className="h-7 text-[10px] w-full" disabled>Cancel</Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="h-7 text-[10px] w-full" 
+                            onClick={() => handleCancelTool(msg.id)}
+                          >
+                            Cancel
+                          </Button>
                           <Button 
                             size="sm" 
                             variant={msg.tool.type === "DELETE" ? "destructive" : "default"}
@@ -234,9 +250,13 @@ export function ChatMockup() {
                             Confirm {msg.tool.type === "DELETE" && <Trash2 className="w-3 h-3 ml-1" />}
                           </Button>
                         </div>
-                      ) : (
+                      ) : msg.tool.status === "CONFIRMED" ? (
                         <div className="mt-3 p-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-md text-[10px] text-emerald-600 dark:text-emerald-400 font-medium text-center flex items-center justify-center gap-1.5">
                           <CheckCircle2 className="h-3.5 w-3.5" /> Action Confirmed
+                        </div>
+                      ) : (
+                        <div className="mt-3 p-1.5 bg-muted border border-border/50 rounded-md text-[10px] text-muted-foreground font-medium text-center flex items-center justify-center gap-1.5">
+                          Action Cancelled
                         </div>
                       )}
                     </div>
@@ -296,7 +316,7 @@ export function ChatMockup() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ type: "spring", bounce: 0, duration: 0.8, delay: 0.1 }}
-          className="md:col-span-2 rounded-2xl border border-border/60 bg-card shadow-lg flex flex-col h-full overflow-hidden relative hidden md:flex"
+          className="md:col-span-2 rounded-2xl border border-border/60 bg-card shadow-lg flex flex-col overflow-hidden relative h-[350px] md:h-full"
         >
           <div className="h-14 border-b border-border/40 flex items-center px-5 bg-muted/10">
             <h3 className="text-sm font-bold tracking-tight text-foreground/80 uppercase">Active Subscriptions</h3>
