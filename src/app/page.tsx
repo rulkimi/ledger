@@ -241,7 +241,7 @@ export default async function HomePage() {
                 Your ledger, <span className="text-primary">perfected.</span>
               </h2>
               <p className="text-muted-foreground text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
-                Join thousands of users taking back control of their subscriptions. See your true monthly cost in seconds. No credit card required.
+                Take back control of your subscriptions. See your true monthly cost in seconds. No credit card required.
               </p>
               <Link href="/register">
                 <Button size="lg" className="h-14 px-10 text-base font-semibold shadow-xl shadow-primary/25 rounded-full transition-all hover:scale-105 group">
