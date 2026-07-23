@@ -272,3 +272,9 @@
 ::view-transition-new(root) {
   z-index: 9999;
 }
+
+/* Custom Text Selection Highlight */
+::selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
