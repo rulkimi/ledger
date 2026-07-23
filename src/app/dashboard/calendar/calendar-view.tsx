@@ -4,6 +4,7 @@ import { useState } from "react";
 import { formatCurrency } from "@/lib/currency";
 import { format } from "date-fns";
 import { LayoutGrid, List, Check } from "lucide-react";
+import { useSound } from "@/hooks/use-sound";
 import { AddSubscriptionDialog } from "@/app/dashboard/_components/add-subscription-dialog";
 
 // Serialised version — dates come as ISO strings from Server Component
@@ -29,6 +30,7 @@ interface Props {
 
 export function CalendarView({ months, maxTotal, grandTotal, currency }: Props) {
   const [detailed, setDetailed] = useState(false);
+  const { play } = useSound();
 
   return (
     <div className="h-full flex flex-col space-y-6 min-h-0">
@@ -51,7 +53,9 @@ export function CalendarView({ months, maxTotal, grandTotal, currency }: Props) 
           {/* Toggle */}
           <div className="flex items-center border border-border/60 rounded-lg overflow-hidden">
             <button
-              onClick={() => setDetailed(false)}
+              onClick={() => {
+                if (detailed) { play("click"); setDetailed(false); }
+              }}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
                 !detailed ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/40"
               }`}
@@ -61,7 +65,9 @@ export function CalendarView({ months, maxTotal, grandTotal, currency }: Props) 
             </button>
             <div className="w-px h-5 bg-border/60" />
             <button
-              onClick={() => setDetailed(true)}
+              onClick={() => {
+                if (!detailed) { play("pop"); setDetailed(true); }
+              }}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
                 detailed ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/40"
               }`}

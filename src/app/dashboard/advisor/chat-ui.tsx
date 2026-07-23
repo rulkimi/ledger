@@ -53,7 +53,6 @@ function EditableAddSubscriptionCard({
   };
 
   const onCancel = async () => {
-    play("click");
     setProcessingState("canceling");
     try {
       await handleCancel(toolCallId);
@@ -225,7 +224,9 @@ export function ChatUI() {
   const [input, setInput] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const { messages, sendMessage, status, error, setMessages } = useChat({
-    // Optional config here
+    onFinish: () => {
+      play("pop");
+    }
   });
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [allSessions, setAllSessions] = useState<{id: string, title: string, createdAt: Date, updatedAt: Date}[]>([]);
@@ -377,7 +378,7 @@ export function ChatUI() {
     setIsSaving(true);
     try {
       await deleteChatSession(id);
-      play("success");
+      play("delete");
       const remaining = allSessions.filter(s => s.id !== id);
       setAllSessions(remaining);
       if (sessionId === id) {
@@ -477,7 +478,7 @@ export function ChatUI() {
     setDeletingToolCallId(toolCallId);
     try {
       await deleteSubscription(input.id);
-      play("success");
+      play("delete");
       injectToolResult(toolCallId, `Successfully deleted ${input.name} (RM${input.cost} ${FREQUENCY_LABELS[input.billingFrequency] || input.billingFrequency})!`);
     } catch (e: any) {
       play("error");
@@ -578,7 +579,7 @@ export function ChatUI() {
         {allSessions.map(session => (
           <div
             key={session.id}
-            onClick={() => { play("click"); handleSwitchChat(session.id); }}
+            onClick={() => { handleSwitchChat(session.id); }}
             className={`
               group flex items-center justify-between gap-2 px-3 py-2 min-w-[120px] max-w-[200px] text-xs font-medium rounded-t-lg transition-colors border border-b-0 cursor-pointer
               ${sessionId === session.id 
@@ -589,7 +590,7 @@ export function ChatUI() {
           >
             <span className="truncate">{session.title}</span>
             <button
-              onClick={(e) => { e.stopPropagation(); play("click"); setChatToDelete(session.id); }}
+              onClick={(e) => { e.stopPropagation(); setChatToDelete(session.id); }}
               className={`p-[2px] rounded hover:bg-destructive/10 hover:text-destructive transition-opacity ${
                 sessionId === session.id 
                   ? 'opacity-100' 
@@ -602,7 +603,7 @@ export function ChatUI() {
         ))}
         {allSessions.length < 5 && (
           <button 
-            onClick={() => { play("click"); handleNewChat(); }}
+            onClick={() => { handleNewChat(); }}
             className="flex items-center justify-center px-3 py-2 ml-1 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-t-lg transition-colors border border-transparent hover:border-border/50 border-b-0"
           >
             <Plus className="h-4 w-4" />
@@ -656,7 +657,6 @@ export function ChatUI() {
                   key={i}
                   className="flex flex-col items-start p-4 bg-muted/20 hover:bg-muted/60 border border-border/50 rounded-2xl transition-all text-left hover:border-primary/30 group shadow-sm hover:shadow-md"
                   onClick={() => {
-                    play("click");
                     // @ts-expect-error - AI SDK v7 expects UIMessage without content, but streamText expects content
                     sendMessage({ role: "user", content: suggestion.prompt });
                   }}

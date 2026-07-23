@@ -7,6 +7,12 @@ const SOUNDS = {
   success: "/sounds/sound-success.mp3",
   /** Light digital click — use on button presses or UI interactions */
   click: "/sounds/sound-click.mp3",
+  /** Small popping sound (negative pop) — use for minor reveals, popovers, tooltips, or deletions */
+  pop: "/sounds/sound-pop.mp3",
+  /** Alias for popping sound used on delete actions */
+  delete: "/sounds/sound-pop.mp3",
+  /** Cartoon bubble ascending pop — use for grand reveals, like Cento finishing a verdict */
+  reveal: "/sounds/sound-reveal.mp3",
 } as const;
 
 export type SoundName = keyof typeof SOUNDS;

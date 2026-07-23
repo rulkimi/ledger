@@ -78,7 +78,7 @@ export function BurnRateCard({
 
   return (
     <button 
-      onClick={() => { play("click"); setIsEditing(true); }}
+      onClick={() => { setIsEditing(true); }}
       className="bg-card flex flex-col items-center justify-center gap-0.5 px-1 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-3 hover:bg-muted/20 transition-colors group text-left w-full h-full"
     >
       <div className="relative">

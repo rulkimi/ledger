@@ -64,12 +64,13 @@ export function SettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger 
-        className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full inline-flex items-center justify-center transition-colors"
-        onClick={() => play("click")}
-      >
-        <Settings className="h-4 w-4" />
-        <span className="sr-only">Settings</span>
+      <DialogTrigger asChild>
+        <button 
+          className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full inline-flex items-center justify-center transition-colors"
+        >
+          <Settings className="h-4 w-4" />
+          <span className="sr-only">Settings</span>
+        </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -99,7 +100,7 @@ export function SettingsDialog({
                   variant="ghost" 
                   size="sm" 
                   className={`flex-1 h-8 gap-2 rounded-md ${theme === 'light' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                  onClick={() => { play("click"); setTheme("light"); }}
+                  onClick={() => { if (theme !== 'light') play("pop"); setTheme("light"); }}
                 >
                   <Sun className="h-4 w-4" />
                   <span className="text-xs font-medium">Light</span>
@@ -109,7 +110,7 @@ export function SettingsDialog({
                   variant="ghost" 
                   size="sm" 
                   className={`flex-1 h-8 gap-2 rounded-md ${theme === 'dark' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                  onClick={() => { play("click"); setTheme("dark"); }}
+                  onClick={() => { if (theme !== 'dark') play("pop"); setTheme("dark"); }}
                 >
                   <Moon className="h-4 w-4" />
                   <span className="text-xs font-medium">Dark</span>
@@ -119,7 +120,7 @@ export function SettingsDialog({
                   variant="ghost" 
                   size="sm" 
                   className={`flex-1 h-8 gap-2 rounded-md ${theme === 'system' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                  onClick={() => { play("click"); setTheme("system"); }}
+                  onClick={() => { if (theme !== 'system') play("pop"); setTheme("system"); }}
                 >
                   <Monitor className="h-4 w-4" />
                   <span className="text-xs font-medium">System</span>

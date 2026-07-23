@@ -18,7 +18,7 @@ export function DeleteSubscriptionButton({ id, name }: { id: string; name: strin
     startTransition(async () => {
       try {
         await deleteSubscription(id);
-        play("success");
+        play("delete");
         window.dispatchEvent(new CustomEvent("cento-refresh"));
         setOpen(false);
       } catch (e) {
@@ -31,15 +31,14 @@ export function DeleteSubscriptionButton({ id, name }: { id: string; name: strin
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={
+      <DialogTrigger>
         <button
           aria-label={`Delete ${name}`}
           className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/8 transition-colors active:scale-[0.97]"
-          onClick={() => play("click")}
         >
           <Trash2 className="h-3.5 w-3.5" />
         </button>
-      } />
+      </DialogTrigger>
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -58,7 +57,7 @@ export function DeleteSubscriptionButton({ id, name }: { id: string; name: strin
           </p>
 
           <DialogFooter>
-            <Button type="button" variant="ghost" size="sm" onClick={() => { play("click"); setOpen(false); }} disabled={isPending}>
+            <Button type="button" variant="ghost" size="sm" onClick={() => { setOpen(false); }} disabled={isPending}>
               Cancel
             </Button>
             <Button

@@ -70,12 +70,12 @@ export function AddSubscriptionDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
-      <DialogTrigger render={
-        <Button size="sm" className="gap-1.5 font-medium" onClick={() => play("click")}>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { resetForm(); } }}>
+      <DialogTrigger asChild>
+        <Button size="sm" className="gap-1.5 font-medium">
           <Plus className="h-3.5 w-3.5" /> Add
         </Button>
-      } />
+      </DialogTrigger>
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -154,7 +154,7 @@ export function AddSubscriptionDialog() {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="ghost" size="sm" onClick={() => { play("click"); setOpen(false); }}>Cancel</Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => { setOpen(false); }}>Cancel</Button>
             <Button type="submit" size="sm" disabled={isPending} className="min-w-[130px]">
               {isPending
                 ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Saving…</>

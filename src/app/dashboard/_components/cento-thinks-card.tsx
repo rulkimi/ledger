@@ -42,7 +42,7 @@ export default function CentoThinksCard({ className }: { className?: string }) {
           if (active) {
             setVerdict(data.verdict);
             // Only play sound on user-triggered refreshes, not initial page load
-            if (isTriggeredRef.current) playRef.current("success");
+            if (isTriggeredRef.current) playRef.current("reveal");
           }
         } else {
           if (active) setVerdict("I'm looking at your subscriptions... they look a bit questionable. Click below to chat about them!");
