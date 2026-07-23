@@ -14,7 +14,7 @@ import { useSound } from "@/hooks/use-sound";
 export function SettingsDialog({ 
   user 
 }: { 
-  user: { name?: string | null; email?: string | null; monthlyIncome?: number | null } 
+  user: { name?: string | null; email?: string | null; monthlyIncome?: number | null; centoPrompt?: string | null; centoRoastLevel?: string } 
 }) {
   const { theme, setTheme } = useTheme();
   const { play } = useSound();
@@ -30,6 +30,8 @@ export function SettingsDialog({
   const [name, setName] = useState(user.name || "");
   const [email, setEmail] = useState(user.email || "");
   const [income, setIncome] = useState(user.monthlyIncome ? user.monthlyIncome.toString() : "");
+  const [centoPrompt, setCentoPrompt] = useState(user.centoPrompt || "");
+  const [centoRoastLevel, setCentoRoastLevel] = useState(user.centoRoastLevel || "MEDIUM");
   const [currentPassword, setCurrentPassword] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -45,6 +47,8 @@ export function SettingsDialog({
         name,
         email,
         income: isNaN(parsedIncome) ? null : parsedIncome,
+        centoPrompt: centoPrompt.trim() === "" ? null : centoPrompt,
+        centoRoastLevel,
         currentPassword: currentPassword ? currentPassword : undefined,
         password: password ? password : undefined
       });
@@ -90,6 +94,42 @@ export function SettingsDialog({
           <div className="space-y-2">
             <Label htmlFor="income">Monthly Income</Label>
             <Input id="income" type="number" value={income} onChange={(e) => setIncome(e.target.value)} placeholder="e.g. 5000" />
+          </div>
+          <div className="flex flex-col gap-2 pt-2 border-t border-border/40">
+            <Label>Cento's Roast Level</Label>
+            <div className="flex bg-muted/50 rounded-lg p-1 border border-border/50">
+              {['ENABLER', 'MEDIUM', 'ROASTER'].map((level) => (
+                <button
+                  key={level}
+                  type="button"
+                  onClick={() => {
+                    if (centoRoastLevel !== level) play("pop");
+                    setCentoRoastLevel(level);
+                  }}
+                  className={`flex-1 text-[10px] sm:text-xs font-medium py-1.5 px-2 rounded-md transition-colors ${
+                    centoRoastLevel === level ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {level === 'ENABLER' ? 'Enabler' : level === 'MEDIUM' ? 'Medium' : 'Rage Baiter'}
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground px-1">
+              {centoRoastLevel === 'ENABLER' && "Validates your spending but keeps you financially responsible."}
+              {centoRoastLevel === 'MEDIUM' && "Balances realistic advice with a bit of sass."}
+              {centoRoastLevel === 'ROASTER' && "No mercy. Prepare to be absolutely cooked for your choices."}
+            </p>
+          </div>
+          <div className="space-y-2 pt-2 border-t border-border/40">
+            <Label htmlFor="centoPrompt">Cento's Custom Instructions (Optional)</Label>
+            <textarea 
+              id="centoPrompt" 
+              className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              value={centoPrompt} 
+              onChange={(e) => setCentoPrompt(e.target.value)} 
+              placeholder="e.g. Talk to me like a pirate, or always mention my savings goals."
+              rows={3}
+            />
           </div>
           <div className="flex flex-col gap-2 pt-2 border-t border-border/40">
             <Label>Appearance</Label>

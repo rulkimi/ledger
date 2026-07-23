@@ -18,7 +18,7 @@ export async function updateMonthlyIncome(income: number | null) {
 
 import bcrypt from "bcryptjs";
 
-export async function updateProfile(data: { name?: string; email?: string; password?: string; currentPassword?: string; income?: number | null }) {
+export async function updateProfile(data: { name?: string; email?: string; password?: string; currentPassword?: string; income?: number | null; centoPrompt?: string | null; centoRoastLevel?: string }) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
 
@@ -29,6 +29,8 @@ export async function updateProfile(data: { name?: string; email?: string; passw
   if (data.name !== undefined) updateData.name = data.name;
   if (data.email !== undefined) updateData.email = data.email;
   if (data.income !== undefined) updateData.monthlyIncome = data.income !== null ? data.income : null;
+  if (data.centoPrompt !== undefined) updateData.centoPrompt = data.centoPrompt;
+  if (data.centoRoastLevel !== undefined) updateData.centoRoastLevel = data.centoRoastLevel;
   
   if (data.password) {
     if (!data.currentPassword) {

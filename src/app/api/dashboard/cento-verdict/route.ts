@@ -4,18 +4,23 @@ import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { calculateTrueMonthlyCost, FREQUENCY_LABEL } from "@/lib/subscription-utils";
 import { unstable_cache } from "next/cache";
+import { buildCentoSystemPrompt } from "@/lib/cento-prompt";
 
 // Cache LLM generation to avoid hitting Gemini on every request
 const getCachedCentoThoughts = unstable_cache(
-  async (formattedSubs: string, totalBurn: number, currency: string, monthlyIncome: number | null) => {
+  async (formattedSubs: string, totalBurn: number, currency: string, monthlyIncome: number | null, roastLevel: string, customPrompt: string | null) => {
     const hasIncome = monthlyIncome !== null && monthlyIncome > 0;
     const incomeContext = hasIncome 
       ? `User's Monthly Income: ${currency} ${monthlyIncome}. Their "burn rate" (subs / income) is ${((totalBurn / monthlyIncome) * 100).toFixed(1)}%.` 
       : "User's monthly income is not configured in the app yet (DO NOT assume they are unemployed or broke, they just haven't entered it).";
     
+    const baseContext = `Write a punchy, easy-to-read summary (1-2 short paragraphs, brief bullet points only if it genuinely helps) of the user's active subscriptions. Focus on total monthly burn and burn rate if income is known. Only call out or roast something if it's actually worth it — clearly redundant services (e.g. 3 streaming platforms), a suspiciously high burn rate relative to income, or something that stands out as a waste. If everything looks fine, just say so — no need to manufacture drama. If income isn't provided, don't assume they're broke, just skip the burn rate. Talk like a blunt friend, not a financial report. Don't start with greetings or intros, just get into it.`;
+
+    const finalSystemPrompt = buildCentoSystemPrompt(baseContext, roastLevel, customPrompt);
+
     const response = await generateText({
       model: google("gemini-3.5-flash-lite"),
-      system: "You are Cento, a sharp, casual financial subscription advisor. Write a punchy, easy-to-read summary (1-2 short paragraphs, brief bullet points only if it genuinely helps) of the user's active subscriptions. Focus on total monthly burn and burn rate if income is known. Only call out or roast something if it's actually worth it — clearly redundant services (e.g. 3 streaming platforms), a suspiciously high burn rate relative to income, or something that stands out as a waste. If everything looks fine, just say so — no need to manufacture drama. If income isn't provided, don't assume they're broke, just skip the burn rate. No emojis. Talk like a blunt friend, not a financial report. Don't start with greetings or intros, just get into it.",
+      system: finalSystemPrompt,
       prompt: `User's preferred currency: ${currency}. Total Average Monthly Burn: ${totalBurn.toFixed(2)}. ${incomeContext} Active Subscriptions:\n${formattedSubs}`,
 
     });
@@ -55,7 +60,7 @@ export async function GET() {
       const currency = session.user.currency || "MYR";
 
       // Uses Next.js unstable_cache to serve cached result if parameters haven't changed
-      verdictText = await getCachedCentoThoughts(formattedSubs, totalBurn, currency, monthlyIncome);
+      verdictText = await getCachedCentoThoughts(formattedSubs, totalBurn, currency, monthlyIncome, user.centoRoastLevel, user.centoPrompt);
     } catch (e) {
       console.error("Failed to generate Cento's thoughts:", e);
       verdictText = "I'm looking at your subscriptions... they look a bit questionable. Click below to chat about them!";

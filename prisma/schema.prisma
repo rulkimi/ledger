@@ -16,6 +16,8 @@ model User {
   password      String?
   currency      String         @default("MYR")
   monthlyIncome Decimal?       @db.Decimal(10, 2)
+  centoPrompt   String?
+  centoRoastLevel String       @default("MEDIUM")
   subscriptions Subscription[]
   chatSessions  ChatSession[]
 }

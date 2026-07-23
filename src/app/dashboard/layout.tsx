@@ -42,7 +42,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
             <SettingsDialog user={{
               name: session.user.name,
               email: session.user.email,
-              monthlyIncome: dbUser?.monthlyIncome ? Number(dbUser.monthlyIncome) : null
+              monthlyIncome: dbUser?.monthlyIncome ? Number(dbUser.monthlyIncome) : null,
+              centoPrompt: dbUser?.centoPrompt,
+              centoRoastLevel: dbUser?.centoRoastLevel
             }} />
           </div>
         </div>
