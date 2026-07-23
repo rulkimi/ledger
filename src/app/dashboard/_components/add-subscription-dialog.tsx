@@ -71,11 +71,7 @@ export function AddSubscriptionDialog() {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { resetForm(); } }}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="gap-1.5 font-medium">
-          <Plus className="h-3.5 w-3.5" /> Add
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger render={<Button size="sm" className="gap-1.5 font-medium"><Plus className="h-3.5 w-3.5" /> Add</Button>} />
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

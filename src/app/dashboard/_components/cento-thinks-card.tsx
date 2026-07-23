@@ -26,7 +26,9 @@ export default function CentoThinksCard({ className }: { className?: string }) {
   const { play } = useSound();
   // Keep play stable in closures across renders
   const playRef = useRef(play);
-  playRef.current = play;
+  useEffect(() => {
+    playRef.current = play;
+  }, [play]);
   // Tracks whether the fetch was triggered by a user action (vs initial page load)
   const isTriggeredRef = useRef(false);
 
@@ -70,7 +72,7 @@ export default function CentoThinksCard({ className }: { className?: string }) {
       active = false;
       window.removeEventListener("cento-refresh", handleRefresh);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleAsk(e: React.FormEvent) {
     e.preventDefault();

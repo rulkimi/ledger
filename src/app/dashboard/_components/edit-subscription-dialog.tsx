@@ -74,14 +74,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button
-          aria-label={`Edit ${defaultValues.name}`}
-          className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-        >
-          <Pencil className="h-3.5 w-3.5" />
-        </button>
-      </DialogTrigger>
+      <DialogTrigger render={<button aria-label={`Edit ${defaultValues.name}`} className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"><Pencil className="h-3.5 w-3.5" /></button>} />
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

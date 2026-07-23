@@ -68,14 +68,7 @@ export function SettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button 
-          className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full inline-flex items-center justify-center transition-colors"
-        >
-          <Settings className="h-4 w-4" />
-          <span className="sr-only">Settings</span>
-        </button>
-      </DialogTrigger>
+      <DialogTrigger render={<button className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full inline-flex items-center justify-center transition-colors"><Settings className="h-4 w-4" /><span className="sr-only">Settings</span></button>} />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>User Settings</DialogTitle>
@@ -96,7 +89,7 @@ export function SettingsDialog({
             <Input id="income" type="number" value={income} onChange={(e) => setIncome(e.target.value)} placeholder="e.g. 5000" />
           </div>
           <div className="flex flex-col gap-2 pt-2 border-t border-border/40">
-            <Label>Cento's Roast Level</Label>
+            <Label>Cento&apos;s Roast Level</Label>
             <div className="flex bg-muted/50 rounded-lg p-1 border border-border/50">
               {['ENABLER', 'MEDIUM', 'ROASTER'].map((level) => (
                 <button
@@ -121,7 +114,7 @@ export function SettingsDialog({
             </p>
           </div>
           <div className="space-y-2 pt-2 border-t border-border/40">
-            <Label htmlFor="centoPrompt">Cento's Custom Instructions (Optional)</Label>
+            <Label>Cento&apos;s Custom Instructions (Optional)</Label>
             <textarea 
               id="centoPrompt" 
               className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"

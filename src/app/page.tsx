@@ -2,9 +2,12 @@ import { auth, signOut } from "@/auth";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, TrendingUp, ShieldCheck, Layers, CheckCircle2 } from "lucide-react";
+import { ArrowRight, TrendingUp, ShieldCheck, Layers, CheckCircle2, Sparkles, Wallet } from "lucide-react";
 import { FadeInStaggerGroup, FadeInStaggerItem, ScrollInViewGroup, ScrollInViewElement, HoverCardMotion } from "@/components/ui/motion-wrapper";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { HeroMockup } from "@/components/landing/hero-mockup";
+import { CalendarMockup } from "@/components/landing/calendar-mockup";
+import { ChatMockup } from "@/components/landing/chat-mockup";
 
 const features = [
   {
@@ -136,6 +139,11 @@ export default async function HomePage() {
               ))}
             </ul>
           </FadeInStaggerItem>
+          {/* Interactive Mockup */}
+          <FadeInStaggerItem className="w-full mt-16 sm:mt-24 px-2 sm:px-0">
+            <HeroMockup />
+          </FadeInStaggerItem>
+
         </FadeInStaggerGroup>
       </section>
 
@@ -147,9 +155,31 @@ export default async function HomePage() {
             Every feature exists to eliminate one thing: financial uncertainty.
           </p>
         </ScrollInViewElement>
-        <ScrollInViewGroup className="grid md:grid-cols-3 gap-5">
-          {features.map((f) => (
-            <FadeInStaggerItem key={f.title}>
+        
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
+          <ScrollInViewElement>
+            <div className="space-y-6">
+              <div className="p-3 rounded-xl brand-gradient w-fit shadow-sm">
+                <TrendingUp className="h-5 w-5 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold">Cash-Flow Forecasting</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                See every upcoming payment on a rolling calendar — weekly, monthly, bi-annual, or yearly. No more surprises. NetLedger calculates your true monthly burn across every billing cycle and forecasts your cash flow.
+              </p>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="h-4 w-4 text-primary" /> Rolling due-date calculation</li>
+                <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="h-4 w-4 text-primary" /> Urgent bill alerts with countdown</li>
+              </ul>
+            </div>
+          </ScrollInViewElement>
+          <ScrollInViewElement delay={0.2}>
+            <CalendarMockup />
+          </ScrollInViewElement>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-5 mb-20">
+          {features.slice(1).map((f) => (
+            <ScrollInViewElement key={f.title}>
               <div className="group h-full rounded-2xl border border-border/60 bg-card p-7 flex flex-col gap-4">
                 <div className="p-3 rounded-xl brand-gradient w-fit shadow-sm">
                   <f.icon className="h-5 w-5 text-white" />
@@ -159,27 +189,57 @@ export default async function HomePage() {
                   <p className="text-muted-foreground text-sm leading-relaxed">{f.desc}</p>
                 </div>
               </div>
-            </FadeInStaggerItem>
+            </ScrollInViewElement>
           ))}
-        </ScrollInViewGroup>
+        </div>
+
+        {/* Cento AI Section */}
+        <div className="flex flex-col items-center mt-28 mb-10">
+          <ScrollInViewElement className="text-center mb-12 flex flex-col items-center max-w-2xl mx-auto">
+            <div className="p-3 rounded-xl brand-gradient w-fit shadow-sm mb-6 inline-flex">
+              <Sparkles className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="text-3xl md:text-4xl font-extrabold mb-4">Meet Cento</h3>
+            <p className="text-muted-foreground leading-relaxed mb-8">
+              Cento isn&apos;t just a chatbot. It&apos;s an autonomous AI financial advisor that lives in your ledger. It analyzes your spending, identifies wasted money, and can even edit your subscriptions for you.
+            </p>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-3 mb-8">
+              <span className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="h-4 w-4 text-primary" /> Autonomous tool calling</span>
+              <span className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="h-4 w-4 text-primary" /> Inline confirmations</span>
+              <span className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="h-4 w-4 text-primary" /> Adjustable roasts</span>
+            </div>
+            <Link href="/register">
+              <Button size="lg" className="font-semibold shadow-lg shadow-primary/20 gap-2 rounded-full px-8">
+                Chat with Cento <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </ScrollInViewElement>
+          
+          <ScrollInViewElement className="w-full" delay={0.2}>
+            <ChatMockup />
+          </ScrollInViewElement>
+        </div>
       </section>
 
       {/* CTA Banner */}
       {!session?.user && (
-        <section className="container mx-auto max-w-6xl px-4 sm:px-6 pb-20">
-          <ScrollInViewElement>
-            <div className="brand-gradient rounded-3xl p-10 text-center text-white shadow-xl shadow-primary/20">
-              <h2 className="text-2xl sm:text-3xl font-extrabold mb-3">Ready to get clarity?</h2>
-              <p className="text-white/75 text-sm sm:text-base mb-7 max-w-md mx-auto">
-                Create an account and start tracking your subscriptions in seconds.
+        <section className="border-t border-border/40 bg-muted/10 relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/10 blur-[120px] rounded-full pointer-events-none" />
+          <div className="container mx-auto max-w-4xl px-4 sm:px-6 py-28 sm:py-36 text-center relative z-10">
+            <ScrollInViewElement>
+              <h2 className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 text-foreground">
+                Your ledger, <span className="text-primary">perfected.</span>
+              </h2>
+              <p className="text-muted-foreground text-lg sm:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+                Join thousands of users taking back control of their subscriptions. See your true monthly cost in seconds. No credit card required.
               </p>
               <Link href="/register">
-                <Button size="lg" variant="secondary" className="font-semibold shadow-lg gap-2">
-                  Get Started <ArrowRight className="h-4 w-4" />
+                <Button size="lg" className="h-14 px-10 text-base font-semibold shadow-xl shadow-primary/25 rounded-full transition-all hover:scale-105 group">
+                  Start tracking for free <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-            </div>
-          </ScrollInViewElement>
+            </ScrollInViewElement>
+          </div>
         </section>
       )}
 
