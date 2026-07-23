@@ -11,6 +11,7 @@ import { Pencil, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import type { BillingFrequency as ServerBillingFrequency } from "@/generated/prisma/client";
 import { FREQUENCY_LABEL } from "@/lib/subscription-utils";
+import { useSound } from "@/hooks/use-sound";
 
 const CATEGORIES = [
   "Entertainment", "Health", "Technology", "Auto", "Shopping",
@@ -43,6 +44,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
   const [open, setOpen]         = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError]       = useState<string | null>(null);
+  const { play } = useSound();
   const [frequency, setFrequency] = useState<BillingFrequency>(defaultValues.billingFrequency);
   const [category, setCategory]   = useState<string>(defaultValues.category || "none");
 
@@ -59,8 +61,11 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
           category:         category !== "none" ? category : undefined,
           notes:            (formData.get("notes") as string) || undefined,
         });
+        play("success");
+        window.dispatchEvent(new CustomEvent("cento-refresh"));
         setOpen(false);
       } catch (e) {
+        play("error");
         setError("Failed to update. Please try again.");
         console.error(e);
       }
@@ -73,6 +78,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
         <button
           aria-label={`Edit ${defaultValues.name}`}
           className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+          onClick={() => play("click")}
         >
           <Pencil className="h-3.5 w-3.5" />
         </button>
@@ -191,7 +197,7 @@ export function EditSubscriptionDialog({ id, defaultValues }: Props) {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>
+            <Button type="button" variant="ghost" size="sm" onClick={() => { play("click"); setOpen(false); }}>
               Cancel
             </Button>
             <Button type="submit" size="sm" disabled={isPending} className="min-w-[90px]">

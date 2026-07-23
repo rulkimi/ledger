@@ -4,6 +4,7 @@ import { getPaymentsInWindow } from "@/lib/subscription-utils";
 import { formatCurrency } from "@/lib/currency";
 import { format, startOfMonth, addMonths, endOfMonth } from "date-fns";
 import { CalendarDays, ChevronRight } from "lucide-react";
+import { AddSubscriptionDialog } from "./add-subscription-dialog";
 
 export default async function NextMonthPreview({ category }: { category?: string }) {
   const session = await auth();
@@ -43,11 +44,15 @@ export default async function NextMonthPreview({ category }: { category?: string
 
   if (hits.length === 0) {
     return (
-      <div className="flex items-center gap-3 border border-border/60 rounded-xl px-4 py-3 bg-card text-muted-foreground">
-        <CalendarDays className="h-4 w-4 flex-shrink-0" />
-        <p className="text-xs">
-          Nothing due in <span className="font-semibold text-foreground">{monthLabel}</span>.
-        </p>
+      <div className="md:h-full flex flex-col items-center justify-center border border-dashed border-border/40 rounded-xl bg-card min-h-0 text-center p-8 gap-4">
+        <div className="w-12 h-12 rounded-full border border-dashed border-border/40 flex items-center justify-center">
+          <CalendarDays className="h-5 w-5 text-muted-foreground/30" />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-foreground">Nothing due in {monthLabel}</p>
+          <p className="text-xs text-muted-foreground mt-1.5">No bills are scheduled for next month.</p>
+        </div>
+        <AddSubscriptionDialog />
       </div>
     );
   }

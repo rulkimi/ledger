@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Flame, Pencil, Check, Loader2 } from "lucide-react";
 import { formatCurrency } from "@/lib/currency";
 import { updateMonthlyIncome } from "@/actions/user";
+import { useSound } from "@/hooks/use-sound";
 
 export function BurnRateCard({ 
   monthlyExpenses, 
@@ -17,6 +18,7 @@ export function BurnRateCard({
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(income ? income.toString() : "");
   const [loading, setLoading] = useState(false);
+  const { play } = useSound();
 
   const burnRate = income ? (monthlyExpenses / income) * 100 : 0;
   
@@ -37,8 +39,11 @@ export function BurnRateCard({
     try {
       const parsed = parseFloat(inputValue);
       await updateMonthlyIncome(isNaN(parsed) ? null : parsed);
+      play("success");
+      window.dispatchEvent(new CustomEvent("cento-refresh"));
       setIsEditing(false);
     } catch (e) {
+      play("error");
       console.error(e);
     } finally {
       setLoading(false);
@@ -73,7 +78,7 @@ export function BurnRateCard({
 
   return (
     <button 
-      onClick={() => setIsEditing(true)}
+      onClick={() => { play("click"); setIsEditing(true); }}
       className="bg-card flex flex-col items-center justify-center gap-0.5 px-1 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-3 hover:bg-muted/20 transition-colors group text-left w-full h-full"
     >
       <div className="relative">

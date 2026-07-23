@@ -4,6 +4,7 @@ import { buildMonthlyProjection } from "@/lib/subscription-utils";
 import { formatCurrency } from "@/lib/currency";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { BarChart3, TrendingUp } from "lucide-react";
+import { AddSubscriptionDialog } from "./add-subscription-dialog";
 
 export default async function MonthlyProjectionChart({ category }: { category?: string }) {
   const session = await auth();
@@ -47,10 +48,15 @@ export default async function MonthlyProjectionChart({ category }: { category?: 
 
       <CardContent className="pt-4 pb-6 px-6">
         {isEmpty ? (
-          <div className="h-48 flex flex-col items-center justify-center text-center gap-2">
-            <BarChart3 className="h-8 w-8 text-muted-foreground/30" />
-            <p className="text-sm text-muted-foreground">No subscriptions to project yet.</p>
-            <p className="text-xs text-muted-foreground/60">Add your first bill to see your cash flow.</p>
+          <div className="h-48 flex flex-col items-center justify-center text-center gap-3">
+            <div className="w-10 h-10 rounded-full border border-dashed border-border/40 flex items-center justify-center">
+              <BarChart3 className="h-4 w-4 text-muted-foreground/30" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">No data to project yet</p>
+              <p className="text-xs text-muted-foreground/60 mt-0.5">Add your first bill to see your cash flow.</p>
+            </div>
+            <AddSubscriptionDialog />
           </div>
         ) : (
           <div className="flex items-end gap-2 h-48">

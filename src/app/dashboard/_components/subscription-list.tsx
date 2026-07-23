@@ -15,6 +15,7 @@ import { DeleteSubscriptionButton } from "./delete-subscription-button";
 import { FilterBar } from "./filter-bar";
 import { EditSubscriptionDialog } from "./edit-subscription-dialog";
 import type { BillingFrequency as ServerBillingFrequency } from "@/generated/prisma/client";
+import { Inbox } from "lucide-react";
 
 export default async function SubscriptionList({
   category,
@@ -59,13 +60,18 @@ export default async function SubscriptionList({
       <FilterBar count={sorted.length} />
 
       {sorted.length === 0 && (
-        <div className="border border-dashed border-border rounded-xl py-16 text-center">
-          <p className="text-sm font-medium text-foreground">No subscriptions found</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {category
-              ? `Nothing in "${category}". Clear the filter or add a new bill.`
-              : `Hit "Add" to get started.`}
-          </p>
+        <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-border/40 rounded-xl py-16 text-center gap-3">
+          <div className="w-10 h-10 rounded-full border border-dashed border-border/40 flex items-center justify-center">
+            <Inbox className="h-4 w-4 text-muted-foreground/30" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">No subscriptions found</p>
+            <p className="text-xs text-muted-foreground mt-1 max-w-[200px] mx-auto">
+              {category
+                ? `Nothing in "${category}". Clear the filter or add a new bill.`
+                : "Add your first subscription to start tracking."}
+            </p>
+          </div>
         </div>
       )}
 

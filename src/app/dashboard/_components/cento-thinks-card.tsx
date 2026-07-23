@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, ArrowRight, Loader2, Send } from "lucide-react";
+import { Sparkles, ArrowRight, Loader2, Send, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
 import { createNewChatSession } from "@/actions/chat";
+import { useSound } from "@/hooks/use-sound";
 
 const SUGGESTIONS = [
   { icon: "🌶️", title: "Roast my spending", description: "Get a brutal reality check on your subscriptions.", prompt: "Roast my financial choices and tell me if my subscriptions are reasonable." },
@@ -22,15 +23,27 @@ export default function CentoThinksCard({ className }: { className?: string }) {
   const [starting, setStarting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const { play } = useSound();
+  // Keep play stable in closures across renders
+  const playRef = useRef(play);
+  playRef.current = play;
+  // Tracks whether the fetch was triggered by a user action (vs initial page load)
+  const isTriggeredRef = useRef(false);
 
   useEffect(() => {
     let active = true;
-    async function fetchVerdict() {
+
+    async function doFetch() {
+      setLoading(true);
       try {
         const res = await fetch("/api/dashboard/cento-verdict");
         if (res.ok) {
           const data = await res.json();
-          if (active) setVerdict(data.verdict);
+          if (active) {
+            setVerdict(data.verdict);
+            // Only play sound on user-triggered refreshes, not initial page load
+            if (isTriggeredRef.current) playRef.current("success");
+          }
         } else {
           if (active) setVerdict("I'm looking at your subscriptions... they look a bit questionable. Click below to chat about them!");
         }
@@ -38,12 +51,26 @@ export default function CentoThinksCard({ className }: { className?: string }) {
         console.error(e);
         if (active) setVerdict("I'm looking at your subscriptions... they look a bit questionable. Click below to chat about them!");
       } finally {
+        isTriggeredRef.current = false;
         if (active) setLoading(false);
       }
     }
-    fetchVerdict();
-    return () => { active = false; };
-  }, []);
+
+    doFetch();
+
+    function handleRefresh() {
+      if (active) {
+        isTriggeredRef.current = true;
+        doFetch();
+      }
+    }
+
+    window.addEventListener("cento-refresh", handleRefresh);
+    return () => {
+      active = false;
+      window.removeEventListener("cento-refresh", handleRefresh);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleAsk(e: React.FormEvent) {
     e.preventDefault();
@@ -65,6 +92,9 @@ export default function CentoThinksCard({ className }: { className?: string }) {
       <div className="flex-shrink-0 flex items-center gap-2 px-4 h-12 border-b border-border/40">
         <Sparkles className="h-4 w-4 text-primary" />
         <p className="text-xs font-semibold">Cento&apos;s Verdict</p>
+        {loading && verdict !== null && (
+          <RefreshCw className="h-3 w-3 animate-spin text-muted-foreground/40 ml-auto" />
+        )}
       </div>
 
       {/* Verdict body */}

@@ -15,6 +15,7 @@ import { getLatestChatSession, saveChatSession, getAllChatSessions, createNewCha
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
+import { useSound } from "@/hooks/use-sound";
 
 const FREQUENCY_LABELS: Record<string, string> = {
   WEEKLY: "Weekly",
@@ -31,6 +32,7 @@ function EditableAddSubscriptionCard({
 }) {
   const [formData, setFormData] = useState(initialInput || {});
   const [processingState, setProcessingState] = useState<"idle" | "confirming" | "canceling">("idle");
+  const { play } = useSound();
 
   useEffect(() => {
     if (!isCompleted && initialInput && Object.keys(initialInput).length > 0) {
@@ -39,6 +41,7 @@ function EditableAddSubscriptionCard({
   }, [initialInput, isCompleted]);
 
   const onConfirm = async () => {
+    play("click");
     setProcessingState("confirming");
     try {
       await handleConfirm(toolCallId, toolName, formData);
@@ -50,6 +53,7 @@ function EditableAddSubscriptionCard({
   };
 
   const onCancel = async () => {
+    play("click");
     setProcessingState("canceling");
     try {
       await handleCancel(toolCallId);
@@ -233,6 +237,7 @@ export function ChatUI() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const autoSentRef = useRef(false);
+  const { play } = useSound();
 
   useEffect(() => {
     async function loadChat() {
@@ -372,6 +377,7 @@ export function ChatUI() {
     setIsSaving(true);
     try {
       await deleteChatSession(id);
+      play("success");
       const remaining = allSessions.filter(s => s.id !== id);
       setAllSessions(remaining);
       if (sessionId === id) {
@@ -382,6 +388,7 @@ export function ChatUI() {
         }
       }
     } catch (e) {
+      play("error");
       console.error(e);
     } finally {
       setIsSaving(false);
@@ -451,8 +458,10 @@ export function ChatUI() {
         endDate: isOneTime ? null : (input.endDate ? new Date(input.endDate) : null),
         category: input.category || 'Uncategorized',
       });
+      play("success");
       injectToolResult(toolCallId, `Successfully added ${input.name} (RM${input.cost} ${FREQUENCY_LABELS[input.billingFrequency] || input.billingFrequency})!`);
     } catch (e: any) {
+      play("error");
       console.error(e);
       let errorMsg = "Something went wrong saving to the database.";
       if (e.message?.includes("Expected BillingFrequency")) {
@@ -468,8 +477,10 @@ export function ChatUI() {
     setDeletingToolCallId(toolCallId);
     try {
       await deleteSubscription(input.id);
+      play("success");
       injectToolResult(toolCallId, `Successfully deleted ${input.name} (RM${input.cost} ${FREQUENCY_LABELS[input.billingFrequency] || input.billingFrequency})!`);
     } catch (e: any) {
+      play("error");
       console.error(e);
       let errorMsg = "Something went wrong deleting the subscription.";
       if (e.message) {
@@ -518,6 +529,7 @@ export function ChatUI() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
+    play("click");
 
     const updatedMessages = [...messages];
     let resolvedAny = false;
@@ -566,7 +578,7 @@ export function ChatUI() {
         {allSessions.map(session => (
           <div
             key={session.id}
-            onClick={() => handleSwitchChat(session.id)}
+            onClick={() => { play("click"); handleSwitchChat(session.id); }}
             className={`
               group flex items-center justify-between gap-2 px-3 py-2 min-w-[120px] max-w-[200px] text-xs font-medium rounded-t-lg transition-colors border border-b-0 cursor-pointer
               ${sessionId === session.id 
@@ -577,7 +589,7 @@ export function ChatUI() {
           >
             <span className="truncate">{session.title}</span>
             <button
-              onClick={(e) => { e.stopPropagation(); setChatToDelete(session.id); }}
+              onClick={(e) => { e.stopPropagation(); play("click"); setChatToDelete(session.id); }}
               className={`p-[2px] rounded hover:bg-destructive/10 hover:text-destructive transition-opacity ${
                 sessionId === session.id 
                   ? 'opacity-100' 
@@ -590,7 +602,7 @@ export function ChatUI() {
         ))}
         {allSessions.length < 5 && (
           <button 
-            onClick={handleNewChat}
+            onClick={() => { play("click"); handleNewChat(); }}
             className="flex items-center justify-center px-3 py-2 ml-1 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-t-lg transition-colors border border-transparent hover:border-border/50 border-b-0"
           >
             <Plus className="h-4 w-4" />
@@ -644,6 +656,7 @@ export function ChatUI() {
                   key={i}
                   className="flex flex-col items-start p-4 bg-muted/20 hover:bg-muted/60 border border-border/50 rounded-2xl transition-all text-left hover:border-primary/30 group shadow-sm hover:shadow-md"
                   onClick={() => {
+                    play("click");
                     // @ts-expect-error - AI SDK v7 expects UIMessage without content, but streamText expects content
                     sendMessage({ role: "user", content: suggestion.prompt });
                   }}

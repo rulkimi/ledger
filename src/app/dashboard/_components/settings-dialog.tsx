@@ -9,6 +9,7 @@ import { Settings, Loader2, LogOut, Monitor, Sun, Moon } from "lucide-react";
 import { updateProfile } from "@/actions/user";
 import { logout } from "@/actions/auth";
 import { useTheme } from "next-themes";
+import { useSound } from "@/hooks/use-sound";
 
 export function SettingsDialog({ 
   user 
@@ -16,6 +17,7 @@ export function SettingsDialog({
   user: { name?: string | null; email?: string | null; monthlyIncome?: number | null } 
 }) {
   const { theme, setTheme } = useTheme();
+  const { play } = useSound();
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
@@ -46,10 +48,13 @@ export function SettingsDialog({
         currentPassword: currentPassword ? currentPassword : undefined,
         password: password ? password : undefined
       });
+      play("success");
+      window.dispatchEvent(new CustomEvent("cento-refresh"));
       setOpen(false);
       setCurrentPassword("");
       setPassword(""); 
     } catch (err: any) {
+      play("error");
       console.error(err);
       setError(err.message || "Failed to update profile.");
     } finally {
@@ -61,6 +66,7 @@ export function SettingsDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger 
         className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full inline-flex items-center justify-center transition-colors"
+        onClick={() => play("click")}
       >
         <Settings className="h-4 w-4" />
         <span className="sr-only">Settings</span>
@@ -93,7 +99,7 @@ export function SettingsDialog({
                   variant="ghost" 
                   size="sm" 
                   className={`flex-1 h-8 gap-2 rounded-md ${theme === 'light' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                  onClick={() => setTheme("light")}
+                  onClick={() => { play("click"); setTheme("light"); }}
                 >
                   <Sun className="h-4 w-4" />
                   <span className="text-xs font-medium">Light</span>
@@ -103,7 +109,7 @@ export function SettingsDialog({
                   variant="ghost" 
                   size="sm" 
                   className={`flex-1 h-8 gap-2 rounded-md ${theme === 'dark' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                  onClick={() => setTheme("dark")}
+                  onClick={() => { play("click"); setTheme("dark"); }}
                 >
                   <Moon className="h-4 w-4" />
                   <span className="text-xs font-medium">Dark</span>
@@ -113,7 +119,7 @@ export function SettingsDialog({
                   variant="ghost" 
                   size="sm" 
                   className={`flex-1 h-8 gap-2 rounded-md ${theme === 'system' ? 'bg-background shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                  onClick={() => setTheme("system")}
+                  onClick={() => { play("click"); setTheme("system"); }}
                 >
                   <Monitor className="h-4 w-4" />
                   <span className="text-xs font-medium">System</span>

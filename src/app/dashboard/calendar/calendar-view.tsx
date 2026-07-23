@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { formatCurrency } from "@/lib/currency";
 import { format } from "date-fns";
-import { LayoutGrid, List } from "lucide-react";
+import { LayoutGrid, List, Check } from "lucide-react";
+import { AddSubscriptionDialog } from "@/app/dashboard/_components/add-subscription-dialog";
 
 // Serialised version — dates come as ISO strings from Server Component
 export interface SerializedPayment {
@@ -84,14 +85,18 @@ export function CalendarView({ months, maxTotal, grandTotal, currency }: Props) 
             <div
               key={month.label}
               className={`rounded-2xl border overflow-hidden bg-card transition-all ${
-                isCurrentMonth ? "border-primary/40 ring-1 ring-primary/20 shadow-sm" : "border-border/60"
+                isCurrentMonth
+                  ? "border-primary/40 ring-1 ring-primary/20 shadow-sm"
+                  : isEmpty
+                    ? "border-dashed border-border/40"
+                    : "border-border/60"
               }`}
             >
               {/* Month header */}
               <div className={`p-4 sm:p-5 ${isCurrentMonth ? "bg-primary/5" : ""}`}>
                 {/* Top row: Label + Badge */}
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className={`text-xs font-bold uppercase tracking-wider ${isCurrentMonth ? "text-primary" : "text-muted-foreground"}`}>
+                  <span className={`text-xs font-bold uppercase tracking-wider ${isCurrentMonth ? "text-primary" : isEmpty ? "text-muted-foreground/40" : "text-muted-foreground"}`}>
                     {month.label}
                   </span>
                   {isCurrentMonth && (
@@ -101,37 +106,44 @@ export function CalendarView({ months, maxTotal, grandTotal, currency }: Props) 
                   )}
                 </div>
 
-                {/* Amount */}
-                <div className="mb-3">
-                  <span className="text-xl font-extrabold font-mono tracking-tight text-foreground">
-                    {isEmpty ? (
-                      <span className="text-muted-foreground/40 font-normal text-sm">—</span>
-                    ) : (
-                      formatCurrency(month.total, currency)
-                    )}
-                  </span>
-                </div>
-
-                {/* Spend bar */}
-                <div className="h-1.5 rounded-full bg-muted/60 overflow-hidden mb-2.5">
-                  <div
-                    className={`h-full rounded-full transition-all duration-500 ${
-                      isEmpty ? "" : isCurrentMonth ? "brand-gradient" : "bg-primary/35"
-                    }`}
-                    style={{ width: isEmpty ? "0%" : `${Math.max(barWidth, 3)}%` }}
-                  />
-                </div>
-
-                {/* Progress bar label info */}
-                {!isEmpty && (
-                  <div className="flex justify-between items-center text-[10px] text-muted-foreground/60 font-medium mt-1">
-                    {!detailed ? (
-                      <span>{month.payments.length} payment{month.payments.length !== 1 ? "s" : ""}</span>
-                    ) : (
-                      <span />
-                    )}
-                    <span>{barWidth.toFixed(0)}% of peak month</span>
+                {isEmpty ? (
+                  /* Empty state */
+                  <div className="flex flex-col items-center justify-center py-5 gap-1.5">
+                    <div className="w-8 h-8 rounded-full border border-dashed border-border/40 flex items-center justify-center">
+                      <Check className="h-3.5 w-3.5 text-muted-foreground/30" />
+                    </div>
+                    <span className="text-xs text-muted-foreground/40">Nothing due</span>
+                    <AddSubscriptionDialog />
                   </div>
+                ) : (
+                  <>
+                    {/* Amount */}
+                    <div className="mb-3">
+                      <span className="text-xl font-extrabold font-mono tracking-tight text-foreground">
+                        {formatCurrency(month.total, currency)}
+                      </span>
+                    </div>
+
+                    {/* Spend bar */}
+                    <div className="h-1.5 rounded-full bg-muted/60 overflow-hidden mb-2.5">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          isCurrentMonth ? "brand-gradient" : "bg-primary/35"
+                        }`}
+                        style={{ width: `${Math.max(barWidth, 3)}%` }}
+                      />
+                    </div>
+
+                    {/* Progress bar label info */}
+                    <div className="flex justify-between items-center text-[10px] text-muted-foreground/60 font-medium mt-1">
+                      {!detailed ? (
+                        <span>{month.payments.length} payment{month.payments.length !== 1 ? "s" : ""}</span>
+                      ) : (
+                        <span />
+                      )}
+                      <span>{barWidth.toFixed(0)}% of peak month</span>
+                    </div>
+                  </>
                 )}
               </div>
 

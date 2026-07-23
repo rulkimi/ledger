@@ -11,6 +11,7 @@ import { createSubscription } from "@/actions/subscription";
 import { Plus, Loader2 } from "lucide-react";
 import type { BillingFrequency as ServerBillingFrequency } from "@/generated/prisma/client";
 import { FREQUENCY_LABEL } from "@/lib/subscription-utils";
+import { useSound } from "@/hooks/use-sound";
 
 const BILLING_FREQUENCIES = {
   WEEKLY:      "WEEKLY",
@@ -28,6 +29,7 @@ const CATEGORIES = [
 
 export function AddSubscriptionDialog() {
   const router = useRouter();
+  const { play } = useSound();
   const [open, setOpen]         = useState(false);
   const [isPending, startTransition] = useTransition();
   const [frequency, setFrequency] = useState<BillingFrequency>("MONTHLY");
@@ -53,11 +55,14 @@ export function AddSubscriptionDialog() {
           category:         category !== "none" ? category : undefined,
           notes:            (formData.get("notes") as string) || undefined,
         });
+        play("success");
+        window.dispatchEvent(new CustomEvent("cento-refresh"));
         setOpen(false);
         resetForm();
         // Always navigate to Bills after adding so the user can see their new entry
         router.push("/dashboard/bills");
       } catch (e) {
+        play("error");
         setError("Failed to save. Please try again.");
         console.error(e);
       }
@@ -67,7 +72,7 @@ export function AddSubscriptionDialog() {
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) resetForm(); }}>
       <DialogTrigger render={
-        <Button size="sm" className="gap-1.5 font-medium">
+        <Button size="sm" className="gap-1.5 font-medium" onClick={() => play("click")}>
           <Plus className="h-3.5 w-3.5" /> Add
         </Button>
       } />
@@ -149,7 +154,7 @@ export function AddSubscriptionDialog() {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => { play("click"); setOpen(false); }}>Cancel</Button>
             <Button type="submit" size="sm" disabled={isPending} className="min-w-[130px]">
               {isPending
                 ? <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />Saving…</>

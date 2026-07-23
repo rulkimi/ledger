@@ -20,6 +20,7 @@ import {
 import { format } from "date-fns";
 import { CalendarClock, Inbox } from "lucide-react";
 import { DeleteSubscriptionButton } from "./delete-subscription-button";
+import { AddSubscriptionDialog } from "./add-subscription-dialog";
 
 export default async function UpcomingPayments({
   category,
@@ -80,6 +81,9 @@ export default async function UpcomingPayments({
                 {category ? `No subscriptions in "${category}". Try clearing the filter.` : "Add your first subscription to get started."}
               </p>
             </div>
+            {!category && (
+              <AddSubscriptionDialog />
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">
