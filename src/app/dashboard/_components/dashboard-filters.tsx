@@ -7,10 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SlidersHorizontal, X } from "lucide-react";
 
-const CATEGORIES = [
-  "Entertainment", "Health", "Technology", "Auto", "Shopping",
-  "Food", "Utilities", "Finance", "Education", "Travel", "Other",
-];
+import { SUBSCRIPTION_CATEGORIES as CATEGORIES } from "@/lib/constants";
 
 export function DashboardFilters() {
   const router = useRouter();

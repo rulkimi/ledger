@@ -5,10 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
-const CATEGORIES = [
-  "Entertainment", "Health", "Technology", "Auto", "Shopping",
-  "Food", "Utilities", "Finance", "Education", "Travel", "Other",
-];
+import { SUBSCRIPTION_CATEGORIES as CATEGORIES } from "@/lib/constants";
 
 export function FilterBar({ count }: { count: number }) {
   const router       = useRouter();

@@ -1,0 +1,18 @@
+export const SUBSCRIPTION_CATEGORIES = [
+  "Entertainment", 
+  "Software", 
+  "Health", 
+  "Fitness", 
+  "Technology", 
+  "Auto", 
+  "Shopping",
+  "Food", 
+  "Utilities", 
+  "Home", 
+  "Finance", 
+  "Insurance", 
+  "Education", 
+  "Business", 
+  "Travel", 
+  "Other",
+];

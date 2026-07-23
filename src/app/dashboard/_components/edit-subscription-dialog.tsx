@@ -13,10 +13,7 @@ import type { BillingFrequency as ServerBillingFrequency } from "@/generated/pri
 import { FREQUENCY_LABEL } from "@/lib/subscription-utils";
 import { useSound } from "@/hooks/use-sound";
 
-const CATEGORIES = [
-  "Entertainment", "Health", "Technology", "Auto", "Shopping",
-  "Food", "Utilities", "Finance", "Education", "Travel", "Other",
-];
+import { SUBSCRIPTION_CATEGORIES as CATEGORIES } from "@/lib/constants";
 
 const BILLING_FREQUENCIES = {
   WEEKLY:      "WEEKLY",

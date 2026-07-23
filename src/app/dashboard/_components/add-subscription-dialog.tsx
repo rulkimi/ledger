@@ -22,10 +22,7 @@ const BILLING_FREQUENCIES = {
 } as const;
 type BillingFrequency = (typeof BILLING_FREQUENCIES)[keyof typeof BILLING_FREQUENCIES];
 
-const CATEGORIES = [
-  "Entertainment", "Health", "Technology", "Auto", "Shopping",
-  "Food", "Utilities", "Finance", "Education", "Travel", "Other",
-];
+import { SUBSCRIPTION_CATEGORIES as CATEGORIES } from "@/lib/constants";
 
 export function AddSubscriptionDialog() {
   const router = useRouter();

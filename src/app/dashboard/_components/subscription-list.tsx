@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import {
   calculateNextPaymentDate,
   calculateNormalizedCost,
+  calculateTrueMonthlyCost,
   daysUntil,
   FREQUENCY_LABEL,
   FREQUENCY_SHORT,
@@ -81,6 +82,8 @@ export default async function SubscriptionList({
 
           {/* Column header — always shown */}
           <div className="flex-shrink-0 flex items-center gap-4 px-4 py-2 bg-muted/30 border-b border-border/40">
+            {/* Placeholder for status dot */}
+            <span className="w-1.5 flex-shrink-0" />
             <span className="flex-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               Subscription
             </span>
@@ -93,12 +96,14 @@ export default async function SubscriptionList({
               </span>
             ) : (
               <span className="hidden md:block text-[11px] font-semibold text-muted-foreground uppercase tracking-wider min-w-[96px] text-right">
-                /Month equiv.
+                Monthly Burn
               </span>
             )}
             <span className={`text-[11px] font-semibold uppercase tracking-wider min-w-[80px] text-right ${view !== "original" ? "text-primary" : "text-muted-foreground"}`}>
-              {view === "original" ? "Amount" : `${NORMALIZE_VIEW_SUFFIX[view].replace("/", "")} equiv.`}
+              {view === "original" ? "Amount" : `${NORMALIZE_VIEW_SUFFIX[view].replace("/", "")} Equiv`}
             </span>
+            {/* Empty header for actions - must always render to match the row's flex-shrink-0 actions */}
+            <span className="min-w-[68px] flex-shrink-0" />
             </div>
 
 
@@ -138,14 +143,23 @@ export default async function SubscriptionList({
                   </p>
                 </div>
 
-                {/* Original amount — shown when normalize view is active */}
-                {isNormalized && (
+                {/* Middle column: Original amount OR Monthly Burn */}
+                {isNormalized ? (
                   <div className="hidden md:flex flex-col items-end min-w-[96px]">
                     <p className="text-xs font-mono text-muted-foreground">
                       {formatCurrency(sub.rawCost, currency)}
                     </p>
                     <p className="text-[10px] text-muted-foreground/50">
                       {FREQUENCY_SHORT[sub.billingFrequency]}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="hidden md:flex flex-col items-end min-w-[96px]">
+                    <p className="text-xs font-mono text-muted-foreground">
+                      {formatCurrency(calculateTrueMonthlyCost(sub.rawCost, sub.billingFrequency as any), currency)}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground/50">
+                      /mo
                     </p>
                   </div>
                 )}

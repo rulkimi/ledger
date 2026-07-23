@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { HeroMockup } from "@/components/landing/hero-mockup";
 import { CalendarMockup } from "@/components/landing/calendar-mockup";
 import { ChatMockup } from "@/components/landing/chat-mockup";
+import { BillsMockup } from "@/components/landing/bills-mockup";
 
 const features = [
   {
@@ -38,7 +39,7 @@ export default async function HomePage() {
   const session = await auth();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden">
       {/* Subtle background */}
       <div className="fixed inset-0 -z-10 mesh-bg pointer-events-none" />
 
@@ -108,7 +109,7 @@ export default async function HomePage() {
               ) : (
                 <Link href="/register">
                   <Button size="lg" className="h-14 px-10 text-base font-semibold shadow-xl shadow-primary/25 rounded-full transition-all hover:scale-105 group">
-                    Start Tracking Free <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
+                    Start Tracking for Free <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>
               )}
@@ -138,6 +139,29 @@ export default async function HomePage() {
           </p>
         </ScrollInViewElement>
         
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
+          <ScrollInViewElement className="order-2 md:order-1">
+            <BillsMockup />
+          </ScrollInViewElement>
+          <ScrollInViewElement delay={0.2} className="order-1 md:order-2">
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl brand-gradient w-fit shadow-sm">
+                  <Sparkles className="h-5 w-5 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold">Normalization Engine</h3>
+              </div>
+              <p className="text-muted-foreground leading-relaxed">
+                Paying RM 1,440/yr for the gym? NetLedger instantly normalizes all your bizarre billing cycles into one true monthly burn rate. See exactly what everything actually costs you per month.
+              </p>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="h-4 w-4 text-primary" /> Prorates yearly & bi-annual bills</li>
+                <li className="flex items-center gap-2 text-sm"><CheckCircle2 className="h-4 w-4 text-primary" /> Converts everything to a true monthly cost</li>
+              </ul>
+            </div>
+          </ScrollInViewElement>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
           <ScrollInViewElement>
             <div className="space-y-6">
@@ -221,7 +245,7 @@ export default async function HomePage() {
               </p>
               <Link href="/register">
                 <Button size="lg" className="h-14 px-10 text-base font-semibold shadow-xl shadow-primary/25 rounded-full transition-all hover:scale-105 group">
-                  Start tracking for free <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
+                  Start Tracking for Free <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
             </ScrollInViewElement>
@@ -229,8 +253,8 @@ export default async function HomePage() {
         </section>
       )}
 
-      <footer className="border-t border-border/50 py-7 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} NetLedger · Personal Finance & Subscription Tracker
+      <footer className="border-t border-border/50 py-7 px-4 text-center text-xs text-muted-foreground">
+        NetLedger · Built for personal use, shared freely with the world.
       </footer>
     </div>
   );

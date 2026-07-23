@@ -76,22 +76,31 @@ export function HeroMockup() {
               </div>
               <div className="flex-1 overflow-y-auto divide-y divide-border/40 min-h-0">
                 {[
-                  { d: "2 Aug", n: "Netflix", c: "Entertainment", a: "55.00" },
-                  { d: "5 Aug", n: "Spotify Premium", c: "Entertainment", a: "14.90" },
-                  { d: "14 Aug", n: "Gym Membership", c: "Health", a: "120.00" },
-                  { d: "18 Aug", n: "Amazon Prime", c: "Shopping", a: "20.00" },
-                  { d: "21 Aug", n: "Adobe Creative Cloud", c: "Software", a: "235.00" },
-                  { d: "28 Aug", n: "ChatGPT Plus", c: "Software", a: "95.00" },
+                  { d: "2 Aug", n: "Netflix", c: "Entertainment", raw: "55.00", freq: "/mo", a: "55.00" },
+                  { d: "5 Aug", n: "Spotify Premium", c: "Entertainment", raw: "14.90", freq: "/mo", a: "14.90" },
+                  { d: "14 Aug", n: "Gym Membership", c: "Health", raw: "1,440.00", freq: "/yr", a: "120.00" },
+                  { d: "18 Aug", n: "Amazon Prime", c: "Shopping", raw: "20.00", freq: "/mo", a: "20.00" },
+                  { d: "21 Aug", n: "Adobe Creative Cloud", c: "Software", raw: "235.00", freq: "/mo", a: "235.00" },
+                  { d: "28 Aug", n: "ChatGPT Plus", c: "Software", raw: "95.00", freq: "/mo", a: "95.00" },
                 ].map((h, i) => (
-                  <div key={i} className="flex items-center justify-between px-4 py-4 hover:bg-muted/20">
-                    <div className="flex items-center gap-3">
-                      <span className="text-[11px] font-mono text-muted-foreground w-12">{h.d}</span>
-                      <div>
-                        <p className="text-sm font-semibold">{h.n}</p>
-                        <p className="text-xs text-muted-foreground">{h.c}</p>
+                  <div key={i} className="flex items-center justify-between px-3 sm:px-4 py-3 hover:bg-muted/20">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                      <span className="text-[10px] sm:text-[11px] font-mono text-muted-foreground w-10 sm:w-12 flex-shrink-0 text-left">{h.d}</span>
+                      <div className="text-left flex-1 min-w-0">
+                        <p className="text-xs sm:text-sm font-semibold truncate">{h.n}</p>
+                        <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">{h.c}</p>
                       </div>
                     </div>
-                    <p className="text-sm font-bold font-mono">RM {h.a}</p>
+                    
+                    <div className="hidden sm:flex flex-col items-end min-w-[70px]">
+                      <p className="text-xs font-mono text-muted-foreground">RM {h.raw}</p>
+                      <p className="text-[10px] text-muted-foreground/50">{h.freq}</p>
+                    </div>
+
+                    <div className="flex flex-col items-end min-w-[60px] sm:min-w-[80px] flex-shrink-0 ml-2">
+                      <p className="text-xs sm:text-sm font-bold font-mono">RM {h.a}</p>
+                      <p className="text-[9px] sm:text-[10px] text-muted-foreground/50">/mo</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -106,18 +115,18 @@ export function HeroMockup() {
               <div className="flex-1 rounded-xl border border-border/60 bg-card p-5 relative overflow-hidden flex flex-col shadow-sm">
                 
                 {/* Header & Roast Level Toggle */}
-                <div className="flex items-start justify-between mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                   <div className="flex items-center gap-2 text-primary font-bold text-sm">
                     <Sparkles className="h-4 w-4" /> Cento&apos;s Verdict
                   </div>
                   
                   {/* Interactive settings directly on the card for the mockup */}
-                  <div className="flex bg-muted/50 rounded-lg p-0.5 border border-border/50">
+                  <div className="flex w-full sm:w-auto bg-muted/50 rounded-lg p-0.5 border border-border/50">
                     {(["ENABLER", "MEDIUM", "ROASTER"] as const).map(level => (
                       <button
                         key={level}
                         onClick={() => { play("click"); setRoastLevel(level); }}
-                        className={`text-[9px] font-bold px-2 py-1 rounded-md transition-all ${roastLevel === level ? 'bg-primary text-primary-foreground shadow-sm scale-105' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`flex-1 sm:flex-none text-[9px] font-bold px-2 py-1.5 sm:py-1 rounded-md transition-all ${roastLevel === level ? 'bg-primary text-primary-foreground shadow-sm scale-105' : 'text-muted-foreground hover:text-foreground'}`}
                       >
                         {level === "ROASTER" ? "RAGE" : level}
                       </button>
