@@ -21,17 +21,23 @@ const baseUrl = process.env.NEXT_PUBLIC_APP_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
-const siteDescription = "Track subscriptions, calculate true monthly burn, and forecast cash-flow. Stay in complete control of bills.";
+const siteDescription = "Track subscriptions, cut wasted money, and forecast cash flow with NetLedger. Featuring Cento, an autonomous AI financial advisor that roasts your bad spending habits.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
-  title: "NetLedger — Personal Finance & Subscription Tracker",
+  title: {
+    default: "NetLedger | AI-Powered Subscription & Finance Tracker",
+    template: "%s | NetLedger"
+  },
   description: siteDescription,
+  keywords: ["personal finance", "subscription tracker", "AI financial advisor", "budgeting app", "cash flow forecast", "manage subscriptions"],
+  authors: [{ name: "NetLedger Team" }],
+  creator: "NetLedger",
   icons: {
     icon: "/ledger.svg",
   },
   openGraph: {
-    title: "NetLedger — Personal Finance & Subscription Tracker",
+    title: "NetLedger | AI-Powered Subscription & Finance Tracker",
     description: siteDescription,
     url: baseUrl,
     siteName: "NetLedger",

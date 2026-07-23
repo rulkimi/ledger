@@ -78,70 +78,52 @@ export default async function HomePage() {
       </nav>
 
       {/* Hero */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-4 pt-20 pb-12 sm:pt-28 sm:pb-20">
+      <section className="flex-1 flex flex-col items-center justify-center text-center px-4 pt-10 pb-8 sm:pt-16 sm:pb-12">
         <FadeInStaggerGroup className="flex flex-col items-center w-full">
-          {/* Pill badge */}
-          <FadeInStaggerItem>
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold border border-primary/25 bg-primary/8 text-primary mb-8 shadow-sm">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary" />
-          </span>
-          Smart subscription tracking
-        </div>
-
-          </FadeInStaggerItem>
-
           {/* Headline */}
           <FadeInStaggerItem>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-3xl leading-[1.06] text-foreground mt-8">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-4xl leading-[1.06] text-foreground">
               Know exactly{" "}
-              <span className="brand-text">what you owe</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">what you owe</span>
               {" "}—{" "}
-              <span className="brand-text">before it hits.</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">before it hits.</span>
             </h1>
           </FadeInStaggerItem>
 
           <FadeInStaggerItem>
-            <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-lg leading-relaxed mx-auto">
-              NetLedger calculates your true monthly burn across every billing cycle and
-              forecasts your cash flow 12 months out. Stay in complete control.
+            <p className="mt-5 text-base sm:text-lg text-muted-foreground max-w-3xl leading-relaxed mx-auto">
+              NetLedger doesn&apos;t just track your subscriptions. It autonomously identifies wasted money, forecasts your rolling cash flow, and relentlessly roasts your bad spending habits.
             </p>
           </FadeInStaggerItem>
 
           {/* CTA buttons */}
           <FadeInStaggerItem>
-            <div className="flex flex-col sm:flex-row gap-3 mt-10 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 mt-8 justify-center">
               {session?.user ? (
                 <Link href="/dashboard">
-                  <Button size="lg" className="gap-2 shadow-lg shadow-primary/20 font-semibold min-w-[200px]">
-                    Go to Dashboard <ArrowRight className="h-4 w-4" />
+                  <Button size="lg" className="h-14 px-10 text-base font-semibold shadow-xl shadow-primary/25 rounded-full transition-all hover:scale-105 group">
+                    Go to Dashboard <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>
               ) : (
                 <Link href="/register">
-                  <Button size="lg" className="gap-2 shadow-lg shadow-primary/20 font-semibold min-w-[200px]">
-                    Start Tracking Free <ArrowRight className="h-4 w-4" />
+                  <Button size="lg" className="h-14 px-10 text-base font-semibold shadow-xl shadow-primary/25 rounded-full transition-all hover:scale-105 group">
+                    Start Tracking Free <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </Link>
               )}
             </div>
           </FadeInStaggerItem>
 
-          {/* Highlights checklist */}
-          <FadeInStaggerItem>
-            <ul className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-left max-w-xl w-full mx-auto">
-              {highlights.map((h) => (
-                <li key={h} className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                  <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  {h}
-                </li>
-              ))}
-            </ul>
-          </FadeInStaggerItem>
           {/* Interactive Mockup */}
-          <FadeInStaggerItem className="w-full mt-16 sm:mt-24 px-2 sm:px-0">
-            <HeroMockup />
+          <FadeInStaggerItem className="w-full mt-10 sm:mt-12 px-2 sm:px-0 relative">
+            {/* Sun-like radiant glow */}
+            <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-primary/10 dark:bg-primary/30 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-primary/15 dark:bg-primary/50 blur-[80px] rounded-full pointer-events-none" />
+            
+            <div className="relative [mask-image:linear-gradient(to_bottom,black_80%,transparent)] pb-10">
+              <HeroMockup />
+            </div>
           </FadeInStaggerItem>
 
         </FadeInStaggerGroup>

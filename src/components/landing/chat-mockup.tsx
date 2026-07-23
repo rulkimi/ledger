@@ -106,7 +106,7 @@ export function ChatMockup() {
     const hasSpotify = subs.some(s => s.name.includes("Spotify"));
 
     let roastMsg = `Alright, let's roast. RM ${total.toFixed(2)} on ${subs.length} subs? `;
-    let burns = [];
+    const burns = [];
     if (hasAdobe) burns.push("RM 235 on Adobe likely just to make memes");
     if (hasGym) burns.push("RM 120 for a gym you're probably avoiding");
     if (hasNotion) burns.push("RM 40 for Notion to organize a life you aren't living");
@@ -138,7 +138,7 @@ export function ChatMockup() {
     const hasGym = subs.some(s => s.name.includes("Gym"));
     
     let wasteTotal = 0;
-    let items = [];
+    const items = [];
     if (hasGym) { wasteTotal += 120; items.push("Gym"); }
     if (hasAdobe) { wasteTotal += 235; items.push("Adobe"); }
 
@@ -246,8 +246,8 @@ export function ChatMockup() {
             </AnimatePresence>
           </div>
 
-          <div className="p-3 sm:p-4 border-t border-border/40 bg-background flex-shrink-0">
-            <div className="flex gap-2 overflow-x-auto pb-3 custom-scrollbar no-scrollbar">
+          <div className="p-3 sm:p-4 border-t border-border/40 bg-background flex-shrink-0 flex items-center justify-center">
+            <div className="flex gap-2 flex-wrap justify-center">
               <AnimatePresence>
                 {showAddAction && (
                   <motion.button 
@@ -286,12 +286,6 @@ export function ChatMockup() {
                   </motion.button>
                 )}
               </AnimatePresence>
-            </div>
-            <div className="flex items-center gap-2 bg-muted/30 border border-border/60 rounded-full px-4 py-2">
-              <input disabled placeholder="Type your message..." className="flex-1 bg-transparent text-xs sm:text-sm outline-none placeholder:text-muted-foreground/50 cursor-not-allowed" />
-              <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center opacity-50">
-                <Send className="w-3.5 h-3.5 text-primary-foreground -ml-0.5" />
-              </div>
             </div>
           </div>
         </motion.div>

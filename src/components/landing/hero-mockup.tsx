@@ -33,7 +33,7 @@ export function HeroMockup() {
   }, [roastLevel]);
 
   return (
-    <div className="w-full max-w-5xl mx-auto mt-16 relative perspective-1000">
+    <div className="w-full max-w-5xl mx-auto relative perspective-1000">
       {/* Background glow */}
       <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full opacity-50 -z-10 animate-pulse" />
 
