@@ -6,6 +6,19 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useSound } from "@/hooks/use-sound";
 
+const GREETING_VARIANTS = [
+  "Yo. I've been analyzing your ledger. You've got 6 subscriptions eating up RM 539.90 every month. Need help cutting the fat?",
+  "Hey there. RM 539.90 a month on 6 subscriptions. You want me to find the dead weight?",
+  "I see 6 active subscriptions costing you RM 539.90 monthly. Want me to roast your spending or just help you cancel something?",
+  "Let's look at your cash flow. RM 539.90 going out every month across 6 services. Ready to do some trimming?",
+  "RM 539.90 a month on subscriptions... Ouch. Point me at what you want to cancel, or ask me for an audit.",
+  "Your ledger is looking a bit heavy. 6 subs, RM 539.90 total. Let me know if you want me to pause some of them.",
+  "I'm reviewing your monthly burn. RM 539.90 just on subscriptions. We can definitely optimize this. Where should we start?",
+  "RM 539.90 monthly on 6 subs. I can already see a few you aren't using. Want my honest verdict?",
+  "Hey. Let's talk about that RM 539.90 disappearing from your account every month. Need me to step in?",
+  "You've got RM 539.90 tied up in 6 subscriptions. I'm ready to help you slash that number whenever you are."
+];
+
 export function ChatMockup() {
   const [subs, setSubs] = useState([
     { id: 1, name: "Netflix", cost: 55.00 },
@@ -29,10 +42,25 @@ export function ChatMockup() {
   };
 
   const [messages, setMessages] = useState<Message[]>([
-    { id: 0, role: "ai", content: "Yo. I've been analyzing your ledger. You've got 6 subscriptions eating up RM 539.90 every month. Need help cutting the fat?" }
+    { id: 0, role: "ai", content: "" }
   ]);
 
   const [showAddAction, setShowAddAction] = useState(true);
+
+  useEffect(() => {
+    const targetText = GREETING_VARIANTS[Math.floor(Math.random() * GREETING_VARIANTS.length)];
+    let i = 0;
+    const timer = setInterval(() => {
+      setMessages(prev => {
+        const newMsg = [...prev];
+        newMsg[0] = { ...newMsg[0], content: targetText.slice(0, i) };
+        return newMsg;
+      });
+      i++;
+      if (i > targetText.length) clearInterval(timer);
+    }, 20);
+    return () => clearInterval(timer);
+  }, []);
   const [showDeleteAction, setShowDeleteAction] = useState(true);
   const [showRoastAction, setShowRoastAction] = useState(true);
   const [showWasteAction, setShowWasteAction] = useState(true);

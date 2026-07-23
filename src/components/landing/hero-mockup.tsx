@@ -7,9 +7,42 @@ import { Button } from "@/components/ui/button";
 import { useSound } from "@/hooks/use-sound";
 
 const ROAST_TEXTS = {
-  ENABLER: "RM 539.90 next month! Adobe and ChatGPT are great tools. A Gym membership is a solid investment in yourself. Keep crushing it! ✨",
-  MEDIUM: "RM 539.90. You're paying for Adobe and a Gym membership. Are you actually using them enough to justify RM 355/mo? Time for a trim? 🤔",
-  ROASTER: "RM 539.90 on 6 subs?! Statistically, you're probably paying RM 235 for Adobe just to crop PDFs and donating RM 120 to a gym you don't visit. Cancel them. 💀",
+  ENABLER: [
+    "RM 539.90 next month! Adobe and ChatGPT are great tools. A Gym membership is a solid investment in yourself. Keep crushing it! ✨",
+    "RM 539.90 looks scary, but Adobe and the gym are investing in your future. Don't sweat it. 💪",
+    "RM 539.90 is just the cost of doing business when you're a creative beast. Keep those subs rolling! 🎨",
+    "RM 539.90 next month! Treat yourself to that Gym membership, health is wealth. 🌟",
+    "RM 539.90 coming up! ChatGPT is basically your second brain, totally worth every penny. 🧠",
+    "RM 539.90. You work hard, you deserve Adobe and Spotify to keep the vibes high. 🎧",
+    "RM 539.90 due soon. Don't worry about the cost, focus on the value these apps bring to your life. ✨",
+    "RM 539.90. A Gym and Adobe? You're building your body and your portfolio. Huge W. 🏆",
+    "RM 539.90. Money comes and goes, but the gains from that gym membership are forever. 💪",
+    "RM 539.90. It's an investment in your productivity. Keep stacking those wins! 🚀"
+  ],
+  MEDIUM: [
+    "RM 539.90. You're paying for Adobe and a Gym membership. Are you actually using them enough to justify RM 355/mo? Time for a trim? 🤔",
+    "RM 539.90 total. Maybe review that Adobe sub if you haven't opened Photoshop in 3 weeks. Just a thought. 🤨",
+    "RM 539.90. Gym and ChatGPT are good, but maybe cancel Amazon Prime if you're not ordering stuff? 📦",
+    "RM 539.90 coming up. You've got 6 active subs. Are you really utilizing all of them? 🧐",
+    "RM 539.90. RM 120 for the gym is fine, but RM 235 for Adobe? Make sure you're getting your money's worth. 💸",
+    "RM 539.90 due. Might be a good time to do an audit. Do you still need Spotify Premium if you use YouTube? 🎵",
+    "RM 539.90 total. Not terrible, but RM 500+ on digital services and a gym is getting a bit heavy. 📉",
+    "RM 539.90. A decent stack, but keeping Adobe year-round can be pricey if you only do seasonal work. 🤷‍♂️",
+    "RM 539.90. You could save RM 1,440 a year by just hitting the park instead of the gym. Worth considering. 🌳",
+    "RM 539.90. If you cancel just one of these, you'd have an extra RM 100+ for actual investments. 💡"
+  ],
+  ROASTER: [
+    "RM 539.90 on 6 subs?! Statistically, you're probably paying RM 235 for Adobe just to crop PDFs and donating RM 120 to a gym you don't visit. Cancel them. 💀",
+    "RM 539.90? You're basically financing the CEO of Adobe's third yacht. Stop paying for tools you don't use. 🤡",
+    "RM 539.90. You pay RM 120 a month to feel guilty about not going to the gym. I'll roast you for free. Cancel it. 🗑️",
+    "RM 539.90 on digital junk. You pay RM 95 for ChatGPT to write emails you could type in 10 seconds. Tragic. 🤦‍♂️",
+    "RM 539.90. RM 55 for Netflix to fall asleep 10 minutes into a movie. You're bleeding cash for background noise. 📺",
+    "RM 539.90. Spotify, Amazon, Netflix... you're subscribing to every distraction possible so you don't have to work on your goals. 🎯",
+    "RM 539.90. I see an Adobe sub. Be honest, you haven't exported a single video this year. Cancel it and buy groceries. 🍞",
+    "RM 539.90 on 6 subscriptions. Your bank account is screaming, but at least you have 'Premium' music. Priorities, right? 💸",
+    "RM 539.90. You're spending a small car payment on apps. Time to touch grass and cancel half of this list. 🌿",
+    "RM 539.90. If you invested this instead, you'd actually have wealth. Instead you have a pristine, unused gym pass. 🤡"
+  ]
 };
 
 export function HeroMockup() {
@@ -22,7 +55,8 @@ export function HeroMockup() {
     let i = 0;
     setTypedText("");
     
-    const targetText = ROAST_TEXTS[roastLevel];
+    const variants = ROAST_TEXTS[roastLevel];
+    const targetText = variants[Math.floor(Math.random() * variants.length)];
 
     const timer = setInterval(() => {
       setTypedText(targetText.slice(0, i));
